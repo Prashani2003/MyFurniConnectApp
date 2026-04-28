@@ -132,6 +132,7 @@ onPress={()=>{
 setCurrentScreen("home");
 setDrawerOpen(false);
 }}
+
 />
 
 <Drawer.Item
