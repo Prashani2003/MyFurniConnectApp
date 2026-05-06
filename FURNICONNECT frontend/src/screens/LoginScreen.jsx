@@ -1,81 +1,110 @@
-import React, {useState} from "react";
-import {View, Text, TextInput, Button, StyleSheet} from "react-native";
-import {COLORS} from "../theme/colors";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity
+} from "react-native";
 
+import API, { setAuthToken } from "../services/api";
+import { COLORS } from "../theme/colors";
 
-export default function LoginScreen({navigation}){
+export default function LoginScreen({ navigation, setUser }) {
 
-const[name,setName]=useState("");
-const[password,setPassword]=useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-return(
+  const handleLogin = async () => {
+    try {
+      const res = await API.post("/auth/login", {
+        email,
+        password,
+      });
 
-<View style={styles.container}>
+      const { token, user } = res.data;
 
-<Text style={styles.title}>FurniConnect</Text>
+      // 🔥 SET TOKEN (VERY IMPORTANT)
+      setAuthToken(token);
 
-<TextInput
-placeholder="Username or Company Name"
-style={styles.input}
-value={name}
-onChangeText={setName}
-/>
+      // 🔥 SET USER (AUTO NAVIGATION SWITCH)
+      setUser(user);
 
-<TextInput
-placeholder="Password"
-secureTextEntry
-style={styles.input}
-value={password}
-onChangeText={setPassword}
-/>
+      // ❌ REMOVE THIS (CAUSES ERROR)
+      // navigation.replace("Drawer");
 
-<Button
-title="Login"
-onPress={()=>navigation.replace("Home")}
-/>
+      console.log("LOGIN SUCCESS");
 
-<Text
-style={styles.link}
-onPress={()=>navigation.navigate("Register")}
->
-Create Account
-</Text>
+    } catch (err) {
+      console.log("LOGIN ERROR:", err.response?.data || err.message);
+      alert("Login failed");
+    }
+  };
 
-</View>
+  return (
+    <View style={styles.container}>
 
-);
+      <Text style={styles.title}>Login</Text>
+
+      <TextInput
+        placeholder="Email"
+        placeholderTextColor="#aaa"
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+      />
+
+      <TextInput
+        placeholder="Password"
+        placeholderTextColor="#aaa"
+        secureTextEntry
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+      />
+
+      <Button title="Login" onPress={handleLogin} />
+
+      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+        <Text style={styles.link}>
+          Don't have an account? Register
+        </Text>
+      </TouchableOpacity>
+
+    </View>
+  );
 }
 
-const styles=StyleSheet.create({
+// 🎨 STYLES
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: COLORS.background,
+  },
 
-container:{
-flex:1,
-justifyContent:"center",
-padding:20,
-backgroundColor:COLORS.background
-},
+  title: {
+    fontSize: 30,
+    textAlign: "center",
+    marginBottom: 30,
+    color: COLORS.accent,
+  },
 
-title:{
-fontSize:30,
-textAlign:"center",
-marginBottom:30,
-color:COLORS.accent
-},
+  input: {
+    borderWidth: 1,
+    borderColor: "#444",
+    padding: 12,
+    marginBottom: 15,
+    borderRadius: 6,
+    color: "white",
+    backgroundColor: "#2c2c2c",
+  },
 
-input:{
-borderWidth:1,
-borderColor:"#444",
-padding:12,
-marginBottom:15,
-borderRadius:6,
-color:"white",
-backgroundColor:"#2c2c2c"
-},
-
-link:{
-marginTop:15,
-textAlign:"center",
-color:COLORS.accent
-}
-
+  link: {
+    marginTop: 20,
+    textAlign: "center",
+    color: COLORS.accent,
+  },
 });

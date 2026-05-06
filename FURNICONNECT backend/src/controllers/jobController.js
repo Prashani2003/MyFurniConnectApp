@@ -1,75 +1,178 @@
 const db = require("../db/db");
 
-exports.createJob = (req, res) => {
 
-  const { owner_id, title, description, budget } = req.body;
+// ========================
+// CREATE JOB
+// ========================
+exports.createJob = async (req, res) => {
+  try {
+    const { title, description, budget } = req.body;
 
-  const sql =
-    "INSERT INTO jobs (owner_id,title,description,budget) VALUES (?,?,?,?)";
+    const owner_id = req.user.id;
 
-  db.query(sql, [owner_id, title, description, budget], (err, result) => {
+    await db.query(
+      "INSERT INTO jobs (title, description, budget, owner_id) VALUES (?, ?, ?, ?)",
+      [title, description, budget, owner_id]
+    );
 
-    if (err) {
-      return res.status(500).json(err);
-    }
+    res.json({ message: "Job created successfully" });
 
-    res.json({
-      message: "Job created successfully"
-    });
-
-  });
-
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Database error" });
+  }
 };
 
-exports.getJobs = (req, res) => {
 
-  const sql = "SELECT * FROM jobs";
+// ========================
+// GET JOBS
+// ========================
+exports.getJobs = async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT j.*, u.name
+      FROM jobs j
+      JOIN users u ON j.owner_id = u.id
+      ORDER BY j.created_at DESC
+    `);
 
-  db.query(sql, (err, result) => {
+    res.json(rows);
 
-    if (err) {
-      return res.status(500).json(err);
-    }
-
-    res.json(result);
-
-  });
-
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Database error" });
+  }
 };
 
-exports.applyJob = (req, res) => {
 
-  const { job_id, provider_id } = req.body;
+// ========================
+// APPLY JOB
+// ========================
+exports.applyJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const provider_id = req.user.id;
 
-  const sql =
-    "INSERT INTO job_applications (job_id, provider_id) VALUES (?, ?)";
+    // prevent duplicate
+    const [existing] = await db.query(
+      "SELECT * FROM job_applications WHERE job_id = ? AND provider_id = ?",
+      [jobId, provider_id]
+    );
 
-  db.query(sql, [job_id, provider_id], (err, result) => {
-
-    if (err) {
-      return res.status(500).json(err);
+    if (existing.length > 0) {
+      return res.status(400).json({ error: "Already applied" });
     }
 
-    res.json({
-      message: "Application submitted successfully"
-    });
+    await db.query(
+      "INSERT INTO job_applications (job_id, provider_id) VALUES (?, ?)",
+      [jobId, provider_id]
+    );
 
-  });
+    res.json({ message: "Applied successfully" });
 
+  } catch (err) {
+    console.log("APPLY ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 };
 
-exports.getApplications = (req, res) => {
+/// ========================
+// GET APPLICATIONS (FINAL FIX)
+// ========================
+exports.getApplications = async (req, res) => {
+  try {
+    const owner_id = req.user.id;
 
-  const sql = "SELECT * FROM job_applications";
+    const sql = `
+      SELECT 
+        ja.id,
+        ja.status,
+        ja.created_at,
+        ja.provider_id AS worker_id,   -- ✅ FIX
+        j.title,
+        u.name AS worker_name
+      FROM job_applications ja
+      JOIN jobs j ON ja.job_id = j.job_id   -- ✅ FIX (NOT j.id)
+      JOIN users u ON ja.provider_id = u.id
+      WHERE j.owner_id = ?
+      ORDER BY ja.created_at DESC
+    `;
 
-  db.query(sql, (err, result) => {
+    const [rows] = await db.query(sql, [owner_id]);
 
-    if (err) {
-      return res.status(500).json(err);
-    }
+    console.log("APPLICATION DATA:", rows);
 
-    res.json(result);
+    res.json(rows);
 
-  });
+  } catch (err) {
+    console.log("GET APPLICATION ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+// ========================
+// UPDATE APPLICATION STATUS
+// ========================
+exports.updateApplicationStatus = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    const { status } = req.body;
 
+    await db.query(
+      "UPDATE job_applications SET status = ? WHERE id = ?",  // ✅ FIX HERE
+      [status, applicationId]
+    );
+
+    res.json({ message: "Status updated" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// ========================
+// GET MY JOBS
+// ========================
+exports.getMyJobs = async (req, res) => {
+  try {
+    const owner_id = req.user.id;
+
+    const [rows] = await db.query(
+      "SELECT * FROM jobs WHERE owner_id = ? ORDER BY created_at DESC",
+      [owner_id]
+    );
+
+    res.json(rows);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// 🔥 GET MY APPLICATIONS (WORKER)
+exports.getMyApplications = async (req, res) => {
+  try {
+    const provider_id = req.user.id;
+
+    const sql = `
+      SELECT 
+        ja.id,
+        ja.status,
+        j.title,
+        j.description
+      FROM job_applications ja
+      JOIN jobs j ON ja.job_id = j.job_id
+      WHERE ja.provider_id = ?
+      ORDER BY ja.created_at DESC
+    `;
+
+    const [rows] = await db.query(sql, [provider_id]);
+
+    res.json(rows);
+
+  } catch (err) {
+    console.log("MY APPLICATION ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 };

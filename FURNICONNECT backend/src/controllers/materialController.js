@@ -1,38 +1,111 @@
 const db = require("../db/db");
 
-exports.addMaterial = (req, res) => {
+// ======================
+// ADD MATERIAL
+// ======================
+exports.addMaterial = async (req, res) => {
 
-  const { supplier_id, name, price, quantity } = req.body;
+  try {
 
-  const sql =
-    "INSERT INTO materials (supplier_id,name,price,quantity) VALUES (?,?,?,?)";
+    const {
+      name,
+      price,
+      quantity
+    } = req.body;
 
-  db.query(sql, [supplier_id, name, price, quantity], (err, result) => {
+    const supplier_id = req.user.id;
 
-    if (err) {
-      return res.status(500).json(err);
-    }
+    const image =
+      req.file?.filename || null;
 
-    res.json({
-      message: "Material added successfully"
+    await db.query(
+      `
+      INSERT INTO materials
+      (supplier_id, name, price, quantity, image)
+      VALUES (?, ?, ?, ?, ?)
+      `,
+      [
+        supplier_id,
+        name,
+        price,
+        quantity,
+        image
+      ]
+    );
+
+    res.status(201).json({
+      message: "Material added"
     });
 
-  });
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
 
 };
 
-exports.getMaterials = (req, res) => {
+// ======================
+// GET MATERIALS
+// ======================
+exports.getMaterials = async (req, res) => {
 
-  const sql = "SELECT * FROM materials";
+  try {
 
-  db.query(sql, (err, result) => {
+    const [materials] = await db.query(`
+      SELECT
+        *
+      FROM materials
+      ORDER BY material_id DESC
+    `);
 
-    if (err) {
-      return res.status(500).json(err);
-    }
+    res.json(materials);
 
-    res.json(result);
+  } catch (err) {
 
-  });
+    console.log(err);
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
+
+};
+
+// ======================
+// DELETE MATERIAL
+// ======================
+exports.deleteMaterial = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await db.query(
+      `
+      DELETE FROM materials
+      WHERE material_id = ?
+      `,
+      [id]
+    );
+
+    res.json({
+      message: "Material deleted"
+    });
+
+  } catch (err) {
+
+    console.log(err);
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
 
 };

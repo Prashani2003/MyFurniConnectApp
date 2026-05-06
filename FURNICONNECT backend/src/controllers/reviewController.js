@@ -1,40 +1,48 @@
 const db = require("../db/db");
 
-exports.addReview = (req, res) => {
+// ========================
+// ADD REVIEW
+// ========================
+exports.addReview = async (req, res) => {
+  try {
+    const reviewer_id = req.user.id;
+    const { reviewee_id, rating, comment } = req.body;
 
-  const { reviewer_id, reviewee_id, rating, comment } = req.body;
+    console.log("DATA:", reviewer_id, reviewee_id, rating, comment); // 🔥 DEBUG
 
-  const sql =
-    "INSERT INTO reviews (reviewer_id,reviewee_id,rating,comment) VALUES (?,?,?,?)";
+    await db.query(
+      "INSERT INTO reviews (reviewer_id, reviewee_id, rating, comment) VALUES (?, ?, ?, ?)",
+      [reviewer_id, reviewee_id, rating, comment]
+    );
 
-  db.query(sql, [reviewer_id, reviewee_id, rating, comment], (err, result) => {
+    res.json({ message: "Review added" });
 
-    if (err) {
-      return res.status(500).json(err);
-    }
-
-    res.json({
-      message: "Review added successfully"
-    });
-
-  });
-
+  } catch (err) {
+    console.log("ADD REVIEW ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 };
 
-exports.getReviews = (req, res) => {
+// ========================
+// GET REVIEWS FOR USER
+// ========================
+exports.getMyReviews = async (req, res) => {
+  try {
+    const userId = req.user.id;
 
-  const { user_id } = req.query;
+    const [rows] = await db.query(
+      `SELECT r.*, u.name AS reviewer_name
+       FROM reviews r
+       JOIN users u ON r.reviewer_id = u.id
+       WHERE r.reviewee_id = ?   -- 🔥 THIS IS THE FIX
+       ORDER BY r.created_at DESC`,
+      [userId]
+    );
 
-  const sql = "SELECT * FROM reviews WHERE reviewee_id=?";
+    res.json(rows);
 
-  db.query(sql, [user_id], (err, result) => {
-
-    if (err) {
-      return res.status(500).json(err);
-    }
-
-    res.json(result);
-
-  });
-
+  } catch (err) {
+    console.log("GET REVIEWS ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 };
