@@ -24,7 +24,6 @@ router.post("/", authMiddleware, createJob);
 // GET ALL JOBS
 // ==========================
 router.get("/", getJobs);
-
 // ==========================
 // GET MY JOBS (OWNER)
 // ==========================

@@ -21,11 +21,7 @@ router.post(
 );
 
 // GET MATERIALS
-router.get(
-  "/",
-  getMaterials
-);
-
+router.get("/", getMaterials);
 // DELETE MATERIAL
 router.delete(
   "/:id",

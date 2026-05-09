@@ -1,141 +1,355 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import Icon from "react-native-vector-icons/MaterialIcons";
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image
+} from "react-native";
+
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem
+} from "@react-navigation/drawer";
+
+import Icon from
+  "react-native-vector-icons/MaterialIcons";
 
 import HomeScreen from "../screens/HomeScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import ProfileScreen from "../screens/UserProfileScreen";
 import MyPostsScreen from "../screens/MyPostsScreen";
 import MessagesScreen from "../screens/MessagesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import MyReviewsScreen from "../screens/MyReviewsScreen";
 
-const Drawer = createDrawerNavigator();
+const Drawer =
+  createDrawerNavigator();
 
-function CustomDrawerContent(props) {
-  const { user, setUser } = props;
+function CustomDrawerContent(
+  props
+) {
 
-  const role = user.role?.toLowerCase();
+  const {
+    user,
+    setUser
+  } = props;
+
+  const role =
+    user?.role?.toLowerCase();
 
   return (
-    <DrawerContentScrollView {...props} style={{ backgroundColor: "#1e1e1e" }}>
-      
-      {/* 🔥 PROFILE SECTION */}
-      <View style={styles.profileContainer}>
+
+    <DrawerContentScrollView
+      {...props}
+      style={{
+        backgroundColor:
+          "#1e1e1e"
+      }}
+    >
+
+      {/* PROFILE SECTION */}
+
+      <View
+        style={
+          styles.profileContainer
+        }
+      >
+
         <Image
-          source={{ uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png" }}
+          source={{
+            uri:
+              user?.profile_image
+                ? user.profile_image
+                : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+          }}
           style={styles.avatar}
         />
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.role}>{user.role}</Text>
+
+        <Text style={styles.name}>
+          {user?.name}
+        </Text>
+
+        <Text style={styles.role}>
+          {user?.role}
+        </Text>
+
       </View>
 
-      {/* 🔥 MENU ITEMS */}
+      {/* HOME */}
+
       <DrawerItem
         label="Home"
-        labelStyle={styles.label}
-        icon={() => <Icon name="home" size={22} color="#fff" />}
-        onPress={() => props.navigation.navigate("Home")}
+        labelStyle={
+          styles.label
+        }
+        icon={() => (
+          <Icon
+            name="home"
+            size={22}
+            color="#fff"
+          />
+        )}
+        onPress={() =>
+          props.navigation.navigate(
+            "Home"
+          )
+        }
       />
+
+      {/* MY PROFILE */}
 
       <DrawerItem
         label="Profile"
         labelStyle={styles.label}
-        icon={() => <Icon name="person" size={22} color="#fff" />}
-        onPress={() => props.navigation.navigate("Profile")}
+        icon={() => (
+          <Icon
+            name="myprofile"
+            size={22}
+            color="#fff"
+          />
+        )}
+        onPress={() =>
+          props.navigation.navigate(
+            "My Profile",
+            {
+              userId: user?.id
+            }
+          )
+        }
       />
 
-      {/* ROLE BASED */}
-      {role === "supplier" && (
-        <DrawerItem
-          label="My Posts"
-          labelStyle={styles.label}
-          icon={() => <Icon name="description" size={22} color="#fff" />}
-          onPress={() => props.navigation.navigate("My Posts")}
-        />
-      )}
+      {/* SUPPLIER */}
 
-      {role === "serviceprovider" && (
-        <DrawerItem
-          label="Messages"
-          labelStyle={styles.label}
-          icon={() => <Icon name="chat" size={22} color="#fff" />}
-          onPress={() => props.navigation.navigate("Messages")}
-        />
-      )}
+      {role ===
+        "supplier" && (
 
-      {role === "furnitureowner" && (
-        <DrawerItem
-          label="Settings"
-          labelStyle={styles.label}
-          icon={() => <Icon name="settings" size={22} color="#fff" />}
-          onPress={() => props.navigation.navigate("Settings")}
-        />
-      )}
+          <DrawerItem
+            label="My Posts"
+            labelStyle={
+              styles.label
+            }
+            icon={() => (
+              <Icon
+                name="description"
+                size={22}
+                color="#fff"
+              />
+            )}
+            onPress={() =>
+              props.navigation.navigate(
+                "My Posts"
+              )
+            }
+          />
+
+        )}
+
+      {/* SERVICE PROVIDER */}
+
+      {role ===
+        "serviceprovider" && (
+
+          <DrawerItem
+            label="Messages"
+            labelStyle={
+              styles.label
+            }
+            icon={() => (
+              <Icon
+                name="chat"
+                size={22}
+                color="#fff"
+              />
+            )}
+            onPress={() =>
+              props.navigation.navigate(
+                "Messages"
+              )
+            }
+          />
+
+        )}
+
+      {/* FURNITURE OWNER */}
+
+      {role ===
+        "furnitureowner" && (
+
+          <DrawerItem
+            label="Settings"
+            labelStyle={
+              styles.label
+            }
+            icon={() => (
+              <Icon
+                name="settings"
+                size={22}
+                color="#fff"
+              />
+            )}
+            onPress={() =>
+              props.navigation.navigate(
+                "Settings"
+              )
+            }
+          />
+
+        )}
+
+      <DrawerItem
+        label="My Reviews"
+        labelStyle={styles.label}
+        icon={() => (
+          <Icon
+            name="star"
+            size={22}
+            color="#fff"
+          />
+        )}
+        onPress={() =>
+          props.navigation.navigate(
+            "My Reviews"
+          )
+        }
+      />
 
       {/* LOGOUT */}
+
       <DrawerItem
         label="Logout"
-        labelStyle={styles.label}
-        icon={() => <Icon name="logout" size={22} color="red" />}
-        onPress={() => setUser(null)}
+        labelStyle={
+          styles.label
+        }
+        icon={() => (
+          <Icon
+            name="logout"
+            size={22}
+            color="red"
+          />
+        )}
+        onPress={() =>
+          setUser(null)
+        }
       />
 
     </DrawerContentScrollView>
+
   );
+
 }
 
-export default function DrawerNavigator({ user, setUser }) {
+export default function DrawerNavigator({
+  user,
+  setUser
+}) {
+
   if (!user) return null;
 
   return (
+
     <Drawer.Navigator
+
       screenOptions={{
-        headerStyle: { backgroundColor: "#111" },
-        headerTintColor: "#fff",
-        drawerStyle: { backgroundColor: "#1e1e1e" },
+        headerStyle: {
+          backgroundColor:
+            "#111"
+        },
+
+        headerTintColor:
+          "#fff",
+
+        drawerStyle: {
+          backgroundColor:
+            "#1e1e1e"
+        }
       }}
+
       drawerContent={(props) => (
-        <CustomDrawerContent {...props} user={user} setUser={setUser} />
+
+        <CustomDrawerContent
+          {...props}
+          user={user}
+          setUser={setUser}
+        />
+
       )}
+
     >
-      <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
-      <Drawer.Screen name="My Posts" component={MyPostsScreen} />
-      <Drawer.Screen name="Messages" component={MessagesScreen} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} />
+
+      <Drawer.Screen
+        name="Home"
+        component={HomeScreen}
+      />
+
+      <Drawer.Screen
+        name="My Profile"
+        component={ProfileScreen}
+        initialParams={{
+          userId: user?.id
+        }}
+      />
+
+      <Drawer.Screen
+        name="My Posts"
+        component={MyPostsScreen}
+      />
+
+      <Drawer.Screen
+        name="Messages"
+        component={MessagesScreen}
+      />
+
+      <Drawer.Screen
+  name="My Reviews"
+  component={MyReviewsScreen}
+/>
+
+      <Drawer.Screen
+        name="Settings"
+        component={SettingsScreen}
+      />
+
     </Drawer.Navigator>
+
   );
+
 }
 
-const styles = StyleSheet.create({
-  profileContainer: {
-    padding: 20,
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#333",
-    marginBottom: 10,
-  },
+const styles =
+  StyleSheet.create({
 
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 10,
-  },
+    profileContainer: {
+      padding: 20,
+      alignItems:
+        "center",
+      borderBottomWidth: 1,
+      borderBottomColor:
+        "#333",
+      marginBottom: 10
+    },
 
-  name: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+    avatar: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      marginBottom: 10
+    },
 
-  role: {
-    color: "#aaa",
-    marginTop: 5,
-  },
+    name: {
+      color: "#fff",
+      fontSize: 18,
+      fontWeight: "bold"
+    },
 
-  label: {
-    color: "#fff",
-    fontSize: 15,
-  },
-});
+    role: {
+      color: "#aaa",
+      marginTop: 5
+    },
+
+    label: {
+      color: "#fff",
+      fontSize: 15
+    }
+
+  });

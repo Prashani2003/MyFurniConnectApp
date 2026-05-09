@@ -1,5 +1,3 @@
-// 📁 src/screens/MyMaterialsScreen.jsx
-
 import React, {
   useEffect,
   useState
@@ -8,140 +6,112 @@ import React, {
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
-  Alert
+  FlatList,
+  Image
 } from "react-native";
 
 import {
-  Card,
-  Button
+  Card
 } from "react-native-paper";
 
 import {
-  getMyMaterials,
-  deleteMaterial
+  getMaterials
 } from "../services/api";
 
-import {
-  COLORS
-} from "../theme/colors";
+import { COLORS } from "../theme/colors";
 
 export default function MyMaterialsScreen() {
 
   const [materials, setMaterials] = useState([]);
 
   useEffect(() => {
-    loadMaterials();
+
+    fetchMaterials();
+
   }, []);
 
-  const loadMaterials = async () => {
+  const fetchMaterials = async () => {
 
     try {
 
-      const res = await getMyMaterials();
+      const res = await getMaterials();
 
-      console.log(
-        "MATERIALS:",
-        res.data
-      );
-
-      setMaterials(res.data || []);
+      setMaterials(res.data);
 
     } catch (err) {
 
-      console.log(
-        "LOAD MATERIAL ERROR:",
-        err
-      );
+      console.log(err);
 
     }
 
   };
 
-  const handleDelete = async (id) => {
+  const renderItem = ({ item }) => {
 
-    try {
+    return (
 
-      await deleteMaterial(id);
+      <Card style={styles.card}>
 
-      Alert.alert(
-        "Deleted",
-        "Material deleted successfully"
-      );
+        {
+          item.image && (
+            <Image
+              source={{
+                uri:
+                  `http://192.168.1.3:5000/uploads/${item.image}`
+              }}
+              style={styles.image}
+            />
+          )
+        }
 
-      loadMaterials();
+        <View style={styles.content}>
 
-    } catch (err) {
+          <Text style={styles.name}>
+            {item.name}
+          </Text>
 
-      console.log(
-        "DELETE ERROR:",
-        err
-      );
+          <Text style={styles.text}>
+            Price: Rs. {item.price}
+          </Text>
 
-    }
+          <Text style={styles.text}>
+            Quantity: {item.quantity}
+          </Text>
+
+        </View>
+
+      </Card>
+
+    );
 
   };
 
   return (
+
     <View style={styles.container}>
 
       <Text style={styles.title}>
         My Materials
       </Text>
 
-      {materials.length === 0 ? (
-
-        <Text style={styles.empty}>
-          No materials found
-        </Text>
-
-      ) : (
-
-        <FlatList
-          data={materials}
-          keyExtractor={(item) =>
-            item.material_id.toString()
-          }
-          renderItem={({ item }) => (
-
-            <Card style={styles.card}>
-
-              <Card.Content>
-
-                <Text style={styles.name}>
-                  {item.name}
-                </Text>
-
-                <Text style={styles.text}>
-                  Price: Rs. {item.price}
-                </Text>
-
-                <Text style={styles.text}>
-                  Stock: {item.quantity}
-                </Text>
-
-                <Button
-                  mode="contained"
-                  buttonColor="red"
-                  onPress={() =>
-                    handleDelete(item.material_id)
-                  }
-                >
-                  Delete
-                </Button>
-
-              </Card.Content>
-
-            </Card>
-
-          )}
-        />
-
-      )}
+      <FlatList
+        data={materials}
+        keyExtractor={(item) =>
+          item.material_id.toString()
+        }
+        renderItem={renderItem}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            No materials found
+          </Text>
+        }
+      />
 
     </View>
+
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -162,24 +132,34 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#2a2a2a",
     marginBottom: 20,
-    borderRadius: 20
+    borderRadius: 20,
+    overflow: "hidden"
+  },
+
+  image: {
+    width: "100%",
+    height: 200
+  },
+
+  content: {
+    padding: 15
   },
 
   name: {
     color: "#fff",
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10
   },
 
   text: {
-    color: "#ddd",
-    fontSize: 18,
-    marginBottom: 10
+    color: "#ccc",
+    fontSize: 16,
+    marginBottom: 5
   },
 
   empty: {
-    color: "#999",
+    color: "#aaa",
     fontSize: 18,
     marginTop: 30
   }

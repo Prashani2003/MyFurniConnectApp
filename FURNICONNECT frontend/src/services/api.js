@@ -78,6 +78,11 @@ export const addReview = (data) =>
 export const getReviews = () =>
   API.get("/reviews");
 
+export const getMyReviews = () =>
+  API.get(
+    "/reviews/my-reviews"
+  );
+
 // ===============================
 // ADMIN USERS
 // ===============================
@@ -102,6 +107,7 @@ export const deleteJob = (id) =>
 // ===============================
 // MATERIALS
 // ===============================
+
 export const addMaterial = (data) =>
   API.post(
     "/materials",
@@ -114,11 +120,36 @@ export const addMaterial = (data) =>
     }
   );
 
+// GET ALL MATERIALS
+export const getMaterials = () =>
+  API.get("/materials");
+
 export const getMyMaterials = () =>
   API.get("/materials/my");
 
 export const deleteMaterial = (id) =>
   API.delete(`/materials/${id}`);
+
+// ===============================
+// SERVICE POSTS
+// ===============================
+
+export const createWorkPost =
+  (data) =>
+    API.post(
+      "/works",
+      data,
+      {
+        headers: {
+          "Content-Type":
+          "multipart/form-data"
+        }
+      }
+    );
+export const getServicePosts =() =>
+    API.get("/works");
+
+
 
 // ===============================
 // EXPORT

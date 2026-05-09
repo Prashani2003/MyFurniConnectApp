@@ -6,6 +6,8 @@ import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ChatScreen from "../screens/ChatScreen";
 import ReviewScreen from "../screens/ReviewScreen";
+import UserProfileScreen from "../screens/UserProfileScreen";
+
 
 const Stack = createStackNavigator();
 
@@ -32,6 +34,15 @@ export default function AuthNavigator({ user, setUser }) {
           <Stack.Screen
             name="Review"
             component={ReviewScreen}
+          />
+
+          {/* 🔥 USER PROFILE */}
+          <Stack.Screen
+            name="UserProfile"
+            component={UserProfileScreen}
+            options={{
+              headerShown: false
+            }}
           />
         </>
       ) : (

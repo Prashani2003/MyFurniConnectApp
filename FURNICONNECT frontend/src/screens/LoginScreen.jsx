@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, {
+  useState
+} from "react";
+
+import AsyncStorage from
+  "@react-native-async-storage/async-storage";
+
 import {
   View,
   Text,
@@ -8,44 +14,99 @@ import {
   TouchableOpacity
 } from "react-native";
 
-import API, { setAuthToken } from "../services/api";
-import { COLORS } from "../theme/colors";
+import API, {
+  setAuthToken
+} from "../services/api";
 
-export default function LoginScreen({ navigation, setUser }) {
+import {
+  COLORS
+} from "../theme/colors";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function LoginScreen({
+  navigation,
+  setUser
+}) {
 
-  const handleLogin = async () => {
-    try {
-      const res = await API.post("/auth/login", {
-        email,
-        password,
-      });
+  const [email, setEmail] =
+    useState("");
 
-      const { token, user } = res.data;
+  const [
+    password,
+    setPassword
+  ] = useState("");
 
-      // 🔥 SET TOKEN (VERY IMPORTANT)
-      setAuthToken(token);
+  const handleLogin =
+    async () => {
 
-      // 🔥 SET USER (AUTO NAVIGATION SWITCH)
-      setUser(user);
+      try {
 
-      // ❌ REMOVE THIS (CAUSES ERROR)
-      // navigation.replace("Drawer");
+        const res =
+          await API.post(
+            "/auth/login",
+            {
+              email,
+              password,
+            }
+          );
 
-      console.log("LOGIN SUCCESS");
+        const {
+          token,
+          user
+        } = res.data;
 
-    } catch (err) {
-      console.log("LOGIN ERROR:", err.response?.data || err.message);
-      alert("Login failed");
-    }
-  };
+        // 🔥 CHECK USER DATA
+        console.log(
+          "LOGIN USER:",
+          user
+        );
+
+        // SAVE TOKEN
+        await AsyncStorage.setItem(
+          "token",
+          token
+        );
+
+        // SET TOKEN
+        setAuthToken(token);
+
+        // SET USER
+        setUser({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          profile_image:
+            user.profile_image,
+          bio: user.bio,
+          contact: user.contact,
+          rating: user.rating,
+        });
+
+        console.log(
+          "LOGIN SUCCESS"
+        );
+
+      } catch (err) {
+
+        console.log(
+          "LOGIN ERROR:",
+          err.response?.data ||
+          err.message
+        );
+
+        alert("Login failed");
+
+      }
+
+    };
 
   return (
+
     <View style={styles.container}>
 
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>
+        Login
+      </Text>
 
       <TextInput
         placeholder="Email"
@@ -64,47 +125,70 @@ export default function LoginScreen({ navigation, setUser }) {
         onChangeText={setPassword}
       />
 
-      <Button title="Login" onPress={handleLogin} />
+      <Button
+        title="Login"
+        onPress={handleLogin}
+      />
 
-      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate(
+            "Register"
+          )
+        }
+      >
+
         <Text style={styles.link}>
-          Don't have an account? Register
+
+          Don't have an account?
+          Register
+
         </Text>
+
       </TouchableOpacity>
 
     </View>
+
   );
+
 }
 
 // 🎨 STYLES
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: COLORS.background,
-  },
 
-  title: {
-    fontSize: 30,
-    textAlign: "center",
-    marginBottom: 30,
-    color: COLORS.accent,
-  },
+const styles =
+  StyleSheet.create({
 
-  input: {
-    borderWidth: 1,
-    borderColor: "#444",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 6,
-    color: "white",
-    backgroundColor: "#2c2c2c",
-  },
+    container: {
+      flex: 1,
+      justifyContent:
+        "center",
+      padding: 20,
+      backgroundColor:
+        COLORS.background,
+    },
 
-  link: {
-    marginTop: 20,
-    textAlign: "center",
-    color: COLORS.accent,
-  },
-});
+    title: {
+      fontSize: 30,
+      textAlign: "center",
+      marginBottom: 30,
+      color: COLORS.accent,
+    },
+
+    input: {
+      borderWidth: 1,
+      borderColor: "#444",
+      padding: 12,
+      marginBottom: 15,
+      borderRadius: 6,
+      color: "white",
+      backgroundColor:
+        "#2c2c2c",
+    },
+
+    link: {
+      marginTop: 20,
+      textAlign: "center",
+      color: COLORS.accent,
+    },
+
+  });

@@ -8,8 +8,8 @@ const chatRoutes = require("./src/routes/chatRoutes");
 const reviewRoutes = require("./src/routes/reviewRoutes");
 const adminRoutes = require("./src/routes/adminRoutes");
 const materialRoutes = require("./src/routes/materialRoutes");
-
-
+const workRoutes = require("./src/routes/workRoutes");
+const userRoutes =require("./src/routes/userRoutes");
 
 
 const app = express();
@@ -25,7 +25,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/materials", materialRoutes);
 app.use("/uploads", express.static("uploads"));
-
+app.use("/api/works", workRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("FurniConnect Backend Running");
