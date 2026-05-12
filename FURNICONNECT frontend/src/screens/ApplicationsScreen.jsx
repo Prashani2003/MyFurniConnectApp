@@ -156,28 +156,28 @@ export default function ApplicationsScreen() {
               >
 
                 <Text
-  style={[
+                  style={[
 
-    styles.text,
+                    styles.text,
 
-    app.status === "accepted" && {
-      color: "lime"
-    },
+                    app.status === "accepted" && {
+                      color: "lime"
+                    },
 
-    app.status === "rejected" && {
-      color: "red"
-    },
+                    app.status === "rejected" && {
+                      color: "red"
+                    },
 
-    app.status === "pending" && {
-      color: "yellow"
-    },
+                    app.status === "pending" && {
+                      color: "yellow"
+                    },
 
-  ]}
->
+                  ]}
+                >
 
-  Status: {app.status}
+                  Status: {app.status}
 
-</Text>
+                </Text>
 
               </TouchableOpacity>
 
@@ -241,9 +241,10 @@ export default function ApplicationsScreen() {
                       "Chat",
                       {
                         receiverId:
-                          app.provider_id ||
-                          app.worker_id ||
-                          app.user_id
+                          app.worker_id,
+
+                        jobId:
+                          app.job_id
                       }
                     );
 
@@ -259,37 +260,23 @@ export default function ApplicationsScreen() {
                   onPress={() => {
 
                     console.log(
-                      "APP DATA:",
-                      app
+                      "WORKER ID:",
+                      app.worker_id
                     );
 
-                    const reviewUserId =
-                      app.provider_id ||
-                      app.worker_id ||
-                      app.user_id ||
-                      app.customer_id;
-
-                    console.log(
-                      "FINAL REVIEW USER ID:",
-                      reviewUserId
-                    );
-
-                    if (!reviewUserId) {
-
+                    if (!app.worker_id) {
                       Alert.alert(
                         "Error",
                         "User ID not found"
                       );
-
                       return;
-
                     }
 
                     navigation.navigate(
                       "Review",
                       {
                         revieweeId:
-                          reviewUserId
+                          app.worker_id
                       }
                     );
 

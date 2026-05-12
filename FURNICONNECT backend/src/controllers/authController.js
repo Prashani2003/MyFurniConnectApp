@@ -13,6 +13,7 @@ exports.register = async (req, res) => {
       email,
       password,
       role,
+      service_type,
     } = req.body;
 
     // VALIDATION
@@ -51,15 +52,17 @@ exports.register = async (req, res) => {
         name,
         email,
         password,
-        role
+        role,
+        service_type
       )
-      VALUES (?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?)
       `,
       [
         name,
         email,
         hashedPassword,
         role,
+        service_type,
       ]
     );
 
@@ -150,6 +153,8 @@ exports.login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        service_type:
+          user.service_type,
         profile_image:
           user.profile_image,
         bio: user.bio,

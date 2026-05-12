@@ -23,8 +23,18 @@ export default function UserProfileScreen({
 }) {
 
   const userId =
-    route?.params?.userId;
+  route?.params?.userId ||
+  route?.params?.id;
 
+console.log(
+  "ROUTE PARAMS:",
+  route?.params
+);
+
+console.log(
+  "USER ID:",
+  userId
+);
   const [user, setUser] =
     useState(null);
 
@@ -123,7 +133,7 @@ export default function UserProfileScreen({
           source={{
             uri:
               user.profile_image
-                ? `http://192.168.1.3:5000/uploads/${user.profile_image}`
+                ? `http://10.16.190.247:5000/uploads/${user.profile_image}`
                 : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
           }}
           style={styles.profileImage}
@@ -208,7 +218,7 @@ export default function UserProfileScreen({
               source={{
                 uri:
                   firstImage
-                    ? `http://192.168.1.3:5000/uploads/${firstImage}`
+                    ? `http://10.16.190.247:5000/uploads/${firstImage}`
                     : "https://via.placeholder.com/300"
               }}
               style={styles.workImage}

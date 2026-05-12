@@ -58,7 +58,7 @@ export default function MyMaterialsScreen() {
             <Image
               source={{
                 uri:
-                  `http://192.168.1.3:5000/uploads/${item.image}`
+                  `http://10.16.190.247:5000/uploads/${item.image}`
               }}
               style={styles.image}
             />

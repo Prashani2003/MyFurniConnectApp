@@ -26,6 +26,7 @@ import AdminUsersScreen from "../screens/AdminUsersScreen";
 import AdminJobsScreen from "../screens/AdminJobsScreen";
 import AdminReviewsScreen from "../screens/AdminReviewsScreen";
 import AdminMaterialsScreen from "../screens/AdminMaterialsScreen";
+import UserProfileScreen from "../screens/UserProfileScreen";
 
 import { COLORS } from "../theme/colors";
 
@@ -80,6 +81,24 @@ function CustomDrawerContent(props) {
                 )}
                 onPress={() =>
                     props.navigation.navigate("AdminUsers")
+                }
+            />
+
+            <DrawerItem
+                label="My Profile"
+                labelStyle={{
+                    color: "#fff",
+                    fontSize: 18
+                }}
+                icon={() => (
+                    <Text style={{ fontSize: 24 }}>
+                        👤
+                    </Text>
+                )}
+                onPress={() =>
+                    props.navigation.navigate(
+                        "AdminProfile"
+                    )
                 }
             />
 
@@ -235,6 +254,22 @@ export default function AdminDrawer({ setUser }) {
                     title: "Manage Materials"
                 }}
             />
+
+            <Drawer.Screen
+                name="AdminProfile"
+            >
+                {() => (
+
+                    <UserProfileScreen
+                        route={{
+                            params: {
+                                userId: 1
+                            }
+                        }}
+                    />
+
+                )}
+            </Drawer.Screen>
 
 
 

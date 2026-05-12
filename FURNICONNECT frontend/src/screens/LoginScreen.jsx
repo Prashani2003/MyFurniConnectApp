@@ -54,23 +54,30 @@ export default function LoginScreen({
           user
         } = res.data;
 
-        // 🔥 CHECK USER DATA
+        // 🔥 DEBUG
         console.log(
           "LOGIN USER:",
           user
         );
 
-        // SAVE TOKEN
+        // 🔥 SAVE TOKEN
         await AsyncStorage.setItem(
           "token",
           token
         );
 
-        // SET TOKEN
+        // 🔥 SET TOKEN
+
         setAuthToken(token);
 
-        // SET USER
+        console.log(
+          "LOGIN RESPONSE:",
+          res.data
+        );
+
+        // 🔥 FIX USER ID ERROR
         setUser({
+          user_id: user.id,
           id: user.id,
           name: user.name,
           email: user.email,

@@ -25,7 +25,6 @@ import MaterialCommunityIcons from
 
 import ProfileScreen from "./UserProfileScreen";
 import MyPostsScreen from "./MyPostsScreen";
-import MessagesScreen from "./MessagesScreen";
 import SettingsScreen from "./SettingsScreen";
 import ApplicationsScreen from "./ApplicationsScreen";
 import CreateJobScreen from "./CreateJobScreen";
@@ -36,6 +35,8 @@ import MyReviewsScreen from "./MyReviewsScreen";
 import AddMaterialScreen from "./AddMaterialScreen";
 import MyMaterialsScreen from "./MyMaterialsScreen";
 import AddWorkPostScreen from "./AddWorkPostScreen";
+
+import AIScreen from "./AIScreen";
 
 import AdminDrawer from "../navigation/AdminDrawer";
 
@@ -80,63 +81,71 @@ export default function HomeScreen({
     setSelectedTab] =
     useState("jobs");
 
-  useEffect(() => {
-
-    loadAllData();
-
-  }, []);
-
-  // ADMIN
-
-  if (user?.role === "admin") {
-
-    return (
-      <AdminDrawer
-        setUser={setUser}
-      />
-    );
-
-  }
-
   // LOAD DATA
 
-  const loadAllData =
-    async () => {
+const loadAllData =
+  async () => {
 
-      try {
+    try {
 
-        const jobsRes =
-          await getJobs();
+      const jobsRes =
+        await getJobs();
 
-        setJobs(
-          jobsRes.data || []
-        );
+      setJobs(
+        jobsRes.data || []
+      );
 
-        const materialsRes =
-          await getMaterials();
+      const materialsRes =
+        await getMaterials();
 
-        setMaterials(
-          materialsRes.data || []
-        );
+      setMaterials(
+        materialsRes.data || []
+      );
 
-        const serviceRes =
-          await getServicePosts();
+      const serviceRes =
+        await getServicePosts();
 
-        setServicePosts(
-          serviceRes.data || []
-        );
+      setServicePosts(
+        serviceRes.data || []
+      );
 
-      } catch (err) {
+    } catch (err) {
 
-        console.log(
-          "LOAD ERROR:",
-          err.response?.data ||
-          err.message
-        );
+      console.log(
+        "LOAD ERROR:",
+        err.response?.data ||
+        err.message
+      );
 
-      }
+    }
 
-    };
+  };
+
+// ======================
+// USE EFFECT
+// ======================
+
+useEffect(() => {
+
+  loadAllData();
+
+}, []);
+
+// ======================
+// ADMIN
+// ======================
+
+if (user?.role === "admin") {
+
+  return (
+    <AdminDrawer
+      setUser={setUser}
+    />
+  );
+
+}
+
+  
 
   // APPLY JOB
 
@@ -182,13 +191,6 @@ export default function HomeScreen({
       case "posts":
         return (
           <MyPostsScreen
-            user={user}
-          />
-        );
-
-      case "messages":
-        return (
-          <MessagesScreen
             user={user}
           />
         );
@@ -245,6 +247,11 @@ export default function HomeScreen({
       case "addWork":
         return (
           <AddWorkPostScreen />
+        );
+
+      case "ai":
+        return (
+          <AIScreen />
         );
 
       default:
@@ -712,8 +719,12 @@ export default function HomeScreen({
                       mode="contained"
                       buttonColor="#C19A6B"
                       onPress={() =>
-                        setCurrentScreen(
-                          "messages"
+                        navigation.navigate(
+                          "Chat",
+                          {
+                            receiverId:
+                              item.user_id
+                          }
                         )
                       }
                     >
@@ -906,20 +917,6 @@ export default function HomeScreen({
                     }}
                   />
 
-                  <Drawer.Item
-                    label="Messages"
-                    icon="message-text"
-                    onPress={() => {
-
-                      setCurrentScreen(
-                        "messages"
-                      );
-
-                      setDrawerOpen(false);
-
-                    }}
-                  />
-
                 </>
 
               )}
@@ -960,6 +957,20 @@ export default function HomeScreen({
                 </>
 
               )}
+
+            <Drawer.Item
+              label="AI Assistant"
+              icon="robot"
+              onPress={() => {
+
+                setCurrentScreen(
+                  "ai"
+                );
+
+                setDrawerOpen(false);
+
+              }}
+            />
 
             <Drawer.Item
               label="My Reviews"

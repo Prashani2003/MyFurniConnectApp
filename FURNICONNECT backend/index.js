@@ -26,7 +26,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/materials", materialRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/works", workRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/users", userRoutes);  
+
 
 app.get("/", (req, res) => {
   res.send("FurniConnect Backend Running");

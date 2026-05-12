@@ -1,14 +1,24 @@
 const db = require("../db/db");
 
+
 // ========================
 // ADD REVIEW
 // ========================
 exports.addReview = async (req, res) => {
   try {
-    const reviewer_id = req.user.id;
+
+    // ✅ FIX
+    const reviewer_id = req.user.user_id;
+
     const { reviewee_id, rating, comment } = req.body;
 
-    console.log("DATA:", reviewer_id, reviewee_id, rating, comment); // 🔥 DEBUG
+    console.log(
+      "DATA:",
+      reviewer_id,
+      reviewee_id,
+      rating,
+      comment
+    );
 
     await db.query(
       "INSERT INTO reviews (reviewer_id, reviewee_id, rating, comment) VALUES (?, ?, ?, ?)",
@@ -18,10 +28,19 @@ exports.addReview = async (req, res) => {
     res.json({ message: "Review added" });
 
   } catch (err) {
-    console.log("ADD REVIEW ERROR:", err);
-    res.status(500).json({ error: "Server error" });
+
+    console.log(
+      "ADD REVIEW ERROR:",
+      err
+    );
+
+    res.status(500).json({
+      error: "Server error"
+    });
+
   }
 };
+
 
 // ========================
 // GET REVIEWS FOR USER

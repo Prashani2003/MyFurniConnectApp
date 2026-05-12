@@ -17,11 +17,12 @@ import Icon from
   "react-native-vector-icons/MaterialIcons";
 
 import HomeScreen from "../screens/HomeScreen";
-import ProfileScreen from "../screens/UserProfileScreen";
+import UserProfileScreen from "../screens/UserProfileScreen";
 import MyPostsScreen from "../screens/MyPostsScreen";
 import MessagesScreen from "../screens/MessagesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import MyReviewsScreen from "../screens/MyReviewsScreen";
+import AIScreen from "../screens/AIScreen";
 
 const Drawer =
   createDrawerNavigator();
@@ -36,7 +37,9 @@ function CustomDrawerContent(
   } = props;
 
   const role =
-    user?.role?.toLowerCase();
+    user?.role
+      ?.toLowerCase()
+      ?.replace(/\s/g, "");
 
   return (
 
@@ -74,6 +77,16 @@ function CustomDrawerContent(
           {user?.role}
         </Text>
 
+        {user?.service_type && (
+
+          <Text style={styles.serviceType}>
+
+            {user?.service_type}
+
+          </Text>
+
+        )}
+
       </View>
 
       {/* HOME */}
@@ -104,7 +117,7 @@ function CustomDrawerContent(
         labelStyle={styles.label}
         icon={() => (
           <Icon
-            name="myprofile"
+            name="person"
             size={22}
             color="#fff"
           />
@@ -113,7 +126,8 @@ function CustomDrawerContent(
           props.navigation.navigate(
             "My Profile",
             {
-              userId: user?.id
+              userId:
+               user?.user?.id || user?.id
             }
           )
         }
@@ -197,22 +211,28 @@ function CustomDrawerContent(
 
         )}
 
-      <DrawerItem
-        label="My Reviews"
-        labelStyle={styles.label}
-        icon={() => (
-          <Icon
-            name="star"
-            size={22}
-            color="#fff"
-          />
-        )}
-        onPress={() =>
-          props.navigation.navigate(
-            "My Reviews"
-          )
-        }
-      />
+      {/* MY REVIEWS */}
+
+      {role !== "furnitureowner" && (
+
+        <DrawerItem
+          label="My Reviews"
+          labelStyle={styles.label}
+          icon={() => (
+            <Icon
+              name="star"
+              size={22}
+              color="#fff"
+            />
+          )}
+          onPress={() =>
+            props.navigation.navigate(
+              "My Reviews"
+            )
+          }
+        />
+
+      )}
 
       {/* LOGOUT */}
 
@@ -282,11 +302,25 @@ export default function DrawerNavigator({
         component={HomeScreen}
       />
 
+    <Drawer.Screen
+  name="My Profile"
+  component={UserProfileScreen}
+  initialParams={{
+    userId:
+      user?.id ||
+      user?.user_id
+  }}
+/>
+
+      {/* USER PROFILE SCREEN */}
+
       <Drawer.Screen
-        name="My Profile"
-        component={ProfileScreen}
-        initialParams={{
-          userId: user?.id
+        name="UserProfile"
+        component={UserProfileScreen}
+        options={{
+          drawerItemStyle: {
+            display: "none"
+          }
         }}
       />
 
@@ -301,13 +335,18 @@ export default function DrawerNavigator({
       />
 
       <Drawer.Screen
-  name="My Reviews"
-  component={MyReviewsScreen}
-/>
+        name="My Reviews"
+        component={MyReviewsScreen}
+      />
 
       <Drawer.Screen
         name="Settings"
         component={SettingsScreen}
+      />
+
+      <Drawer.Screen
+        name="AI Assistant"
+        component={AIScreen}
       />
 
     </Drawer.Navigator>
@@ -344,7 +383,16 @@ const styles =
 
     role: {
       color: "#aaa",
-      marginTop: 5
+      marginTop: 5,
+      fontSize: 16
+    },
+
+    serviceType: {
+      color: "#c9a46c",
+      marginTop: 3,
+      fontSize: 14,
+      textTransform:
+        "capitalize"
     },
 
     label: {

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://192.168.1.3:5000/api",
+  baseURL: "http://10.16.190.247:5000/api",
   timeout: 5000,
 });
 
@@ -62,11 +62,18 @@ export const getMyApplications = () =>
 // CHAT
 // ===============================
 
-export const getMessages = (receiverId) =>
-  API.get(`/chat/${receiverId}`);
+export const getMessages =
+  (jobId, userId) =>
+    API.get(
+      `/chat/${jobId}/${userId}`
+    );
 
-export const sendMessage = (data) =>
-  API.post("/chat/send", data);
+export const sendMessage =
+  (data) =>
+    API.post(
+      "/chat",
+      data
+    );
 
 // ===============================
 // REVIEWS
@@ -149,7 +156,9 @@ export const createWorkPost =
 export const getServicePosts =() =>
     API.get("/works");
 
-
+export const getUserProfile =
+  (id) =>
+    API.get(`/users/${id}`);
 
 // ===============================
 // EXPORT
