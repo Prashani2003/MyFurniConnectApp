@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const AI_API = axios.create({
-  baseURL: "http://10.16.190.247:5001"
+  baseURL: "http://192.168.1.3:5001"
 });
 
 // ===============================
@@ -11,7 +11,7 @@ const AI_API = axios.create({
 export const getAIDesign = async (data) => {
 
   return AI_API.post(
-    "/ai-design",
+    "/design-suggestion",
     data
   );
 

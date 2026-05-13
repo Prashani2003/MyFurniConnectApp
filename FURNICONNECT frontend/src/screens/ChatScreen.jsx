@@ -21,11 +21,16 @@ import { COLORS } from "../theme/colors";
 export default function ChatScreen({ route }) {
 
   // 🔥 STEP 2 FIX
-  const {
-    receiverId,
-    jobId
-  } = route.params;
+ const receiverId =
+  route.params?.receiverId;
 
+const jobId =
+  route.params?.jobId;
+
+console.log(
+  "CHAT PARAMS:",
+  route.params
+);
   const [messages, setMessages] =
     useState([]);
 
@@ -113,14 +118,17 @@ export default function ChatScreen({ route }) {
 
         // 🔥 STEP 4 FIX
         const res =
-          await sendMessage({
+       await sendMessage({
 
-            receiver_id:
-              receiverId,
+  receiver_id:
+    receiverId,
 
-            message: text
+  job_id:
+    jobId,
 
-          });
+  message: text
+
+});
 
         console.log(
           "✅ RESPONSE:",

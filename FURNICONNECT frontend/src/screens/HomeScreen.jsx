@@ -83,69 +83,69 @@ export default function HomeScreen({
 
   // LOAD DATA
 
-const loadAllData =
-  async () => {
+  const loadAllData =
+    async () => {
 
-    try {
+      try {
 
-      const jobsRes =
-        await getJobs();
+        const jobsRes =
+          await getJobs();
 
-      setJobs(
-        jobsRes.data || []
-      );
+        setJobs(
+          jobsRes.data || []
+        );
 
-      const materialsRes =
-        await getMaterials();
+        const materialsRes =
+          await getMaterials();
 
-      setMaterials(
-        materialsRes.data || []
-      );
+        setMaterials(
+          materialsRes.data || []
+        );
 
-      const serviceRes =
-        await getServicePosts();
+        const serviceRes =
+          await getServicePosts();
 
-      setServicePosts(
-        serviceRes.data || []
-      );
+        setServicePosts(
+          serviceRes.data || []
+        );
 
-    } catch (err) {
+      } catch (err) {
 
-      console.log(
-        "LOAD ERROR:",
-        err.response?.data ||
-        err.message
-      );
+        console.log(
+          "LOAD ERROR:",
+          err.response?.data ||
+          err.message
+        );
 
-    }
+      }
 
-  };
+    };
 
-// ======================
-// USE EFFECT
-// ======================
+  // ======================
+  // USE EFFECT
+  // ======================
 
-useEffect(() => {
+  useEffect(() => {
 
-  loadAllData();
+    loadAllData();
 
-}, []);
+  }, []);
 
-// ======================
-// ADMIN
-// ======================
+  // ======================
+  // ADMIN
+  // ======================
 
-if (user?.role === "admin") {
+  if (user?.role === "admin") {
 
-  return (
-    <AdminDrawer
-      setUser={setUser}
-    />
-  );
+    return (
+      <AdminDrawer
+        setUser={setUser}
+      />
+    );
 
-}
+  }
 
-  
+
 
   // APPLY JOB
 
@@ -573,6 +573,7 @@ if (user?.role === "admin") {
                             );
 
                             navigation.navigate(
+
                               "UserProfile",
                               {
                                 userId:
@@ -723,7 +724,9 @@ if (user?.role === "admin") {
                           "Chat",
                           {
                             receiverId:
-                              item.user_id
+                              item.user_id,
+                            jobId:
+                              item.post_id
                           }
                         )
                       }

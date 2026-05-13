@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
   TextInput,
   ScrollView,
-  StyleSheet
+  StyleSheet,
+  Image
 } from "react-native";
 
 import { Button } from "react-native-paper";
@@ -41,6 +43,99 @@ export default function AIScreen() {
     useState(false);
 
   // ==========================
+  // IMAGE PREVIEW LOGIC
+  // ==========================
+
+  let previewImage = null;
+
+  // CHAIR
+  if (furnitureType.toLowerCase() === "chair") {
+
+    if (Number(width) < 50) {
+
+      previewImage =
+        require("../assets/designs/chair-small.jpg");
+
+    } else if (Number(width) < 100) {
+
+      previewImage =
+        require("../assets/designs/chair-medium.jpg");
+
+    } else {
+
+      previewImage =
+        require("../assets/designs/chair-large.jpg");
+
+    }
+
+  }
+
+  // SOFA
+  if (furnitureType.toLowerCase() === "sofa") {
+
+    if (Number(width) < 150) {
+
+      previewImage =
+        require("../assets/designs/sofa-small.jpg");
+
+    } else if (Number(width) < 220) {
+
+      previewImage =
+        require("../assets/designs/sofa-medium.jpg");
+
+    } else {
+
+      previewImage =
+        require("../assets/designs/sofa-large.jpg");
+
+    }
+
+  }
+
+  // BED
+  if (furnitureType.toLowerCase() === "bed") {
+
+    if (Number(width) < 120) {
+
+      previewImage =
+        require("../assets/designs/bed-single.jpg");
+
+    } else if (Number(width) < 180) {
+
+      previewImage =
+        require("../assets/designs/bed-queen.jpg");
+
+    } else {
+
+      previewImage =
+        require("../assets/designs/bed-king.jpg");
+
+    }
+
+  }
+
+  // CLOSET
+  if (furnitureType.toLowerCase() === "closet") {
+
+    if (Number(width) < 120) {
+
+      previewImage =
+        require("../assets/designs/closet2.jpg")
+    } else if (Number(width) < 180) {
+
+      previewImage =
+        require("../assets/designs/closet3.jpg");
+
+    } else {
+
+      previewImage =
+        require("../assets/designs/closet4.jpg");
+
+    }
+
+  }
+
+  // ==========================
   // DESIGN SUGGESTION
   // ==========================
 
@@ -54,28 +149,21 @@ export default function AIScreen() {
         const res =
           await getAIDesign({
 
-            furniture_type:
+            furnitureType:
               furnitureType,
 
-            wood_type:
+            woodType:
               woodType,
 
             color:
-              color,
-
-            width:
-              width,
-
-            height:
-              height,
-
-            depth:
-              depth
+              color
 
           });
 
+        console.log(res.data);
+
         setResult(
-          res.data.design
+          JSON.stringify(res.data)
         );
 
       } catch (err) {
@@ -106,7 +194,7 @@ export default function AIScreen() {
         const res =
           await estimateMaterials({
 
-            furniture_type:
+            furnitureType:
               furnitureType,
 
             width:
@@ -121,11 +209,17 @@ export default function AIScreen() {
           });
 
         setResult(
-          JSON.stringify(
-            res.data,
-            null,
-            2
-          )
+
+          `Wood Needed: ${res.data.woodNeeded}
+
+Wood Cost: ${res.data.woodCost}
+
+Polish Cost: ${res.data.polishCost}
+
+Labor Cost: ${res.data.laborCost}
+
+Total Estimated Cost: ${res.data.estimatedCost}`
+
         );
 
       } catch (err) {
@@ -219,12 +313,28 @@ export default function AIScreen() {
         Estimate Materials
       </Button>
 
+      {/* IMAGE PREVIEW */}
+
+      {previewImage && (
+
+        <Image
+          source={previewImage}
+          style={styles.previewImage}
+          resizeMode="cover"
+        />
+
+      )}
+
+      {/* RESULT BOX */}
+
       <View style={styles.resultBox}>
 
         <Text style={styles.result}>
+
           {loading
             ? "Loading..."
             : result}
+
         </Text>
 
       </View>
@@ -260,20 +370,29 @@ const styles = StyleSheet.create({
 
   btn: {
     marginBottom: 15,
-    padding: 5
+    padding: 5,
+    backgroundColor: "#cdb4f6"
+  },
+
+  previewImage: {
+    width: "100%",
+    height: 220,
+    borderRadius: 20,
+    marginTop: 20
   },
 
   resultBox: {
     backgroundColor: "#1e1e1e",
     padding: 15,
     borderRadius: 10,
-    marginTop: 20
+    marginTop: 20,
+    marginBottom: 50
   },
 
   result: {
     color: "#fff",
     fontSize: 16,
-    lineHeight: 24
+    lineHeight: 28
   }
 
 });

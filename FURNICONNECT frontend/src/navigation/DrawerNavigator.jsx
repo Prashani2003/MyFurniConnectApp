@@ -19,10 +19,10 @@ import Icon from
 import HomeScreen from "../screens/HomeScreen";
 import UserProfileScreen from "../screens/UserProfileScreen";
 import MyPostsScreen from "../screens/MyPostsScreen";
-import MessagesScreen from "../screens/MessagesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import MyReviewsScreen from "../screens/MyReviewsScreen";
 import AIScreen from "../screens/AIScreen";
+import ChatScreen from "../screens/ChatScreen";
 
 const Drawer =
   createDrawerNavigator();
@@ -125,10 +125,7 @@ function CustomDrawerContent(
         onPress={() =>
           props.navigation.navigate(
             "My Profile",
-            {
-              userId:
-               user?.user?.id || user?.id
-            }
+           
           )
         }
       />
@@ -263,6 +260,7 @@ export default function DrawerNavigator({
   user,
   setUser
 }) {
+ alert(JSON.stringify(user));
 
   if (!user) return null;
 
@@ -302,27 +300,20 @@ export default function DrawerNavigator({
         component={HomeScreen}
       />
 
-    <Drawer.Screen
-  name="My Profile"
-  component={UserProfileScreen}
-  initialParams={{
-    userId:
-      user?.id ||
-      user?.user_id
-  }}
-/>
+  
 
       {/* USER PROFILE SCREEN */}
 
       <Drawer.Screen
-        name="UserProfile"
-        component={UserProfileScreen}
-        options={{
-          drawerItemStyle: {
-            display: "none"
-          }
-        }}
-      />
+  name="My Profile"
+  component={UserProfileScreen}
+  initialParams={{
+    userId:
+   
+  user?.user?.id ||
+  user?.id
+  }}
+/>
 
       <Drawer.Screen
         name="My Posts"
@@ -331,7 +322,7 @@ export default function DrawerNavigator({
 
       <Drawer.Screen
         name="Messages"
-        component={MessagesScreen}
+        component={ChatScreen}
       />
 
       <Drawer.Screen
