@@ -1,13 +1,34 @@
 const express = require("express");
+
 const router = express.Router();
 
 const {
+
   addReview,
-  getReviews
+  getMyReviews
+
 } = require("../controllers/reviewController");
 
-router.post("/add", addReview);
+const authMiddleware =
+  require("../middleware/authMiddleware");
 
-router.get("/user", getReviews);
+
+// 🔥 ADD REVIEW
+
+router.post(
+  "/",
+  authMiddleware,
+  addReview
+);
+
+
+// 🔥 GET MY REVIEWS
+
+router.get(
+  "/my-reviews",
+  authMiddleware,
+  getMyReviews
+);
+
 
 module.exports = router;

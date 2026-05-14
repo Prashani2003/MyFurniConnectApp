@@ -1,24 +1,77 @@
 import React from "react";
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import { createStackNavigator } from "@react-navigation/stack";
 
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
+import ChatScreen from "../screens/ChatScreen";
+import MessagesScreen from "../screens/MessagesScreen";
+import ReviewScreen from "../screens/ReviewScreen";
+import UserProfileScreen from "../screens/UserProfileScreen";
+import DrawerNavigator from "./DrawerNavigator";
 
-const Stack=createNativeStackNavigator();
 
-export default function AuthNavigator(){
+const Stack = createStackNavigator();
 
-return(
+export default function AuthNavigator({ user, setUser }) {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
 
-<Stack.Navigator>
+      {user ? (
+        <>
+          {/* 🔥 MAIN APP (DRAWER / HOME) */}
+          <Stack.Screen name="Main">
+            {(props) => (
+              <HomeScreen
+                {...props}
+                user={user}
+                setUser={setUser}
+              />
+            )}
+          </Stack.Screen>
 
-<Stack.Screen name="Login" component={LoginScreen}/>
-<Stack.Screen name="Register" component={RegisterScreen}/>
-<Stack.Screen name="Home" component={HomeScreen}/>
+          {/* 🔥 CHAT SCREEN */}
+          <Stack.Screen
+            name="Chat"
+            component={ChatScreen}
+          />
 
-</Stack.Navigator>
+          <Stack.Screen
+            name="Messages"
+            component={MessagesScreen}
+          />
 
-);
+          {/* 🔥 REVIEW SCREEN */}
+          <Stack.Screen
+            name="Review"
+            component={ReviewScreen}
+          />
 
+          {/* 🔥 USER PROFILE */}
+          <Stack.Screen
+            name="UserProfile"
+            component={UserProfileScreen}
+            options={{
+              headerShown: false
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Login">
+            {(props) => (
+              <LoginScreen {...props} setUser={setUser} />
+            )}
+          </Stack.Screen>
+
+          <Stack.Screen name="Register">
+            {(props) => (
+              <RegisterScreen {...props} setUser={setUser} />
+            )}
+          </Stack.Screen>
+        </>
+      )}
+
+    </Stack.Navigator>
+  );
 }

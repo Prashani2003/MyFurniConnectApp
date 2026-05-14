@@ -1,40 +1,86 @@
 const db = require("../db/db");
 
-exports.addReview = (req, res) => {
 
-  const { reviewer_id, reviewee_id, rating, comment } = req.body;
+// ========================
+// ADD REVIEW
+// ========================
+exports.addReview = async (req, res) => {
+  try {
 
-  const sql =
-    "INSERT INTO reviews (reviewer_id,reviewee_id,rating,comment) VALUES (?,?,?,?)";
+    // ✅ FIX
+    const reviewer_id = req.user.user_id;
 
-  db.query(sql, [reviewer_id, reviewee_id, rating, comment], (err, result) => {
+    const { reviewee_id, rating, comment } = req.body;
 
-    if (err) {
-      return res.status(500).json(err);
-    }
+    console.log(
+      "DATA:",
+      reviewer_id,
+      reviewee_id,
+      rating,
+      comment
+    );
 
-    res.json({
-      message: "Review added successfully"
+    await db.query(
+      "INSERT INTO reviews (reviewer_id, reviewee_id, rating, comment) VALUES (?, ?, ?, ?)",
+      [reviewer_id, reviewee_id, rating, comment]
+    );
+
+    res.json({ message: "Review added" });
+
+  } catch (err) {
+
+    console.log(
+      "ADD REVIEW ERROR:",
+      err
+    );
+
+    res.status(500).json({
+      error: "Server error"
     });
 
-  });
-
+  }
 };
 
-exports.getReviews = (req, res) => {
 
-  const { user_id } = req.query;
+// ========================
+// GET REVIEWS FOR USER
+// ========================
+exports.getMyReviews = async (req, res) => {
 
-  const sql = "SELECT * FROM reviews WHERE reviewee_id=?";
+  try {
 
-  db.query(sql, [user_id], (err, result) => {
+    const userId = req.user.user_id;
 
-    if (err) {
-      return res.status(500).json(err);
-    }
+    const [reviews] = await db.query(
 
-    res.json(result);
+      `
+      SELECT
+        reviews.*,
+        users.name AS reviewer_name
+      FROM reviews
+      JOIN users
+      ON reviews.reviewer_id = users.id
+      WHERE reviewee_id = ?
+      ORDER BY created_at DESC
+      `,
 
-  });
+      [userId]
+
+    );
+
+    res.json(reviews);
+
+  } catch (error) {
+
+    console.log(
+      "GET MY REVIEWS ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
 
 };

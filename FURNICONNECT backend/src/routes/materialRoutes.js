@@ -1,10 +1,32 @@
 const express = require("express");
+
 const router = express.Router();
 
-const {addMaterial} = require("../controllers/materialController");
-const {getMaterials} = require("../controllers/materialController");
+const {
+  addMaterial,
+  getMaterials,
+  deleteMaterial
+} = require("../controllers/materialController");
 
-router.post("/add", addMaterial);
-router.get("/all", getMaterials);
+const verifyToken = require("../middleware/authMiddleware");
+
+const upload = require("../middleware/upload");
+
+// ADD MATERIAL
+router.post(
+  "/",
+  verifyToken,
+  upload.single("image"),
+  addMaterial
+);
+
+// GET MATERIALS
+router.get("/", getMaterials);
+// DELETE MATERIAL
+router.delete(
+  "/:id",
+  verifyToken,
+  deleteMaterial
+);
 
 module.exports = router;
