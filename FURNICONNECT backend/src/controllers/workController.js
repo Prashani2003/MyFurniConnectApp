@@ -1,6 +1,5 @@
 const db = require("../db/db");
 
-
 // ========================
 // ADD WORK
 // ========================
@@ -15,10 +14,13 @@ const addWork = async (req, res) => {
       category
     } = req.body;
 
+    const user_id =
+      req.user.id;
+
     const images =
-  req.files?.map(
-    (file) => file.filename
-  ) || [];
+      req.files?.map(
+        (file) => file.filename
+      ) || [];
 
     await db.query(
 
@@ -34,7 +36,7 @@ const addWork = async (req, res) => {
       VALUES (?, ?, ?, ?, ?)`,
 
       [
-        req.user.id,
+        user_id,
         title,
         description,
         JSON.stringify(images),
@@ -44,6 +46,7 @@ const addWork = async (req, res) => {
     );
 
     res.json({
+      success: true,
       message:
         "Work added successfully"
     });
@@ -56,6 +59,7 @@ const addWork = async (req, res) => {
     );
 
     res.status(500).json({
+      success: false,
       message:
         "Server error"
     });
@@ -63,7 +67,6 @@ const addWork = async (req, res) => {
   }
 
 };
-
 
 // ========================
 // GET WORKS
@@ -76,22 +79,25 @@ const getWorks = async (req, res) => {
     const [rows] =
       await db.query(
 
-      `SELECT
+        `SELECT
 
-        works.*,
+          works.*,
 
-        users.name
+          users.name
 
-      FROM works
+        FROM works
 
-      JOIN users
+        LEFT JOIN users
 
-      ON works.user_id =
-      users.id
+        ON works.user_id = users.id
 
-      ORDER BY
-      works.work_id DESC`
+        ORDER BY works.work_id DESC`
 
+      );
+
+    console.log(
+      "WORK ROWS:",
+      rows
     );
 
     res.json(rows);
@@ -104,6 +110,7 @@ const getWorks = async (req, res) => {
     );
 
     res.status(500).json({
+      success: false,
       message:
         "Server error"
     });
@@ -111,7 +118,6 @@ const getWorks = async (req, res) => {
   }
 
 };
-
 
 // ========================
 // EXPORTS

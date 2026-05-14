@@ -63,16 +63,29 @@ export const getMyApplications = () =>
 // ===============================
 
 export const getMessages =
-  (jobId, userId) =>
+  (receiverId) =>
+
     API.get(
-      `/chat/${jobId}/${userId}`
+      `/chat/${receiverId}`
     );
+
+
 
 export const sendMessage =
   (data) =>
+
     API.post(
-      "/chat",
+      "/chat/send",
       data
+    );
+
+
+
+export const getConversations =
+  () =>
+
+    API.get(
+      "/chat/conversations/list"
     );
 
 // ===============================

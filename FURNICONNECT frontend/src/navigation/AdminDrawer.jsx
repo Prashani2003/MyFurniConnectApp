@@ -132,25 +132,7 @@ function CustomDrawerContent(props) {
                 }
             />
 
-            <DrawerItem
-                label="Manage Materials"
-                labelStyle={{
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "bold"
-                }}
-                icon={() => (
-                    <Text style={{ fontSize: 28 }}>
-                        📦
-                    </Text>
-                )}
-                onPress={() =>
-                    props.navigation.navigate(
-                        "AdminMaterials"
-                    )
-                }
-            />
-
+            
             <DrawerItem
                 label="Logout"
                 labelStyle={{

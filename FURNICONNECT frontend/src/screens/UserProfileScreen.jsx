@@ -21,15 +21,14 @@ import {
 
 export default function UserProfileScreen({
   route,
-  navigation
-
+  currentUser
 }) {
 
   
 
- const userId =
+const userId =
   route?.params?.userId ||
-  route?.params?.id;
+  currentUser?.id;
 
 console.log(
   "ROUTE PARAMS:",

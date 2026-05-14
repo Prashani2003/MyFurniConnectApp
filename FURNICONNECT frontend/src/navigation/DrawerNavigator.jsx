@@ -17,12 +17,12 @@ import Icon from
   "react-native-vector-icons/MaterialIcons";
 
 import HomeScreen from "../screens/HomeScreen";
-import UserProfileScreen from "../screens/UserProfileScreen";
 import MyPostsScreen from "../screens/MyPostsScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import MyReviewsScreen from "../screens/MyReviewsScreen";
 import AIScreen from "../screens/AIScreen";
 import ChatScreen from "../screens/ChatScreen";
+import MessagesScreen from "../screens/MessagesScreen";
 
 const Drawer =
   createDrawerNavigator();
@@ -131,24 +131,6 @@ function CustomDrawerContent(
         }
       />
 
-      {/* MY PROFILE */}
-
-      <DrawerItem
-        label="Profile"
-        labelStyle={styles.label}
-        icon={() => (
-          <Icon
-            name="person"
-            size={22}
-            color="#fff"
-          />
-        )}
-        onPress={() =>
-          props.navigation.navigate(
-            "My Profile"
-          )
-        }
-      />
 
       {/* SUPPLIER */}
 
@@ -295,19 +277,9 @@ export default function DrawerNavigator({
       {/* MESSAGES */}
       <Drawer.Screen
         name="Messages"
-        component={ChatScreen}
+        component={MessagesScreen}
       />
 
-      {/* USER PROFILE */}
-      <Drawer.Screen
-        name="My Profile"
-        component={UserProfileScreen}
-        initialParams={{
-          userId:
-            user?.user?.id ||
-            user?.id
-        }}
-      />
 
       {/* MY POSTS */}
       <Drawer.Screen

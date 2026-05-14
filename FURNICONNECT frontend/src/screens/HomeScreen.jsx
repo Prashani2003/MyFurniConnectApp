@@ -31,7 +31,6 @@ import MaterialCommunityIcons from
 
 
 
-import ProfileScreen from "./UserProfileScreen";
 import MyPostsScreen from "./MyPostsScreen";
 import SettingsScreen from "./SettingsScreen";
 import ApplicationsScreen from "./ApplicationsScreen";
@@ -39,6 +38,7 @@ import CreateJobScreen from "./CreateJobScreen";
 import MyJobsScreen from "./MyJobsScreen";
 import MyApplicationsScreen from "./MyApplicationsScreen";
 import MyReviewsScreen from "./MyReviewsScreen";
+
 
 import AddMaterialScreen from "./AddMaterialScreen";
 import MyMaterialsScreen from "./MyMaterialsScreen";
@@ -82,9 +82,9 @@ export default function HomeScreen({
     setMaterials] =
     useState([]);
 
-const [servicePosts,
-  setServicePosts] =
-  useState([]);
+  const [servicePosts,
+    setServicePosts] =
+    useState([]);
 
   const [selectedTab,
     setSelectedTab] =
@@ -110,15 +110,17 @@ const [servicePosts,
         setMaterials(
           materialsRes.data || []
         );
-const serviceRes =
-  await getServicePosts();
+        const serviceRes =
+          await getServicePosts();
 
-console.log(
-  "UPDATED POSTS:",
-  serviceRes.data
-);
+        console.log(
+          "UPDATED POSTS:",
+          serviceRes.data
+        );
 
-setServicePosts(serviceRes.data || []);
+        setServicePosts(
+          (serviceRes.data || []).reverse()
+        );
 
       } catch (err) {
 
@@ -136,15 +138,15 @@ setServicePosts(serviceRes.data || []);
   // USE EFFECT
   // ======================
 
-useFocusEffect(
+  useFocusEffect(
 
-  React.useCallback(() => {
+    React.useCallback(() => {
 
-    loadAllData();
+      loadAllData();
 
-  }, [])
+    }, [])
 
-);
+  );
 
   // ======================
   // ADMIN
@@ -196,12 +198,7 @@ useFocusEffect(
 
     switch (currentScreen) {
 
-      case "profile":
-        return (
-          <ProfileScreen
-            user={user}
-          />
-        );
+
 
       case "posts":
         return (
@@ -259,22 +256,22 @@ useFocusEffect(
           <MyMaterialsScreen />
         );
 
-     case "addWork":
-  return (
+      case "addWork":
+        return (
 
-    <AddWorkPostScreen
-  onSuccess={async () => {
+          <AddWorkPostScreen
+            onSuccess={async () => {
 
-    await loadAllData();
+              await loadAllData();
 
-    setSelectedTab("services");
+              setSelectedTab("works");
 
-    setCurrentScreen("home");
+              setCurrentScreen("home");
 
-  }}
-/>
+            }}
+          />
 
-  );
+        );
       case "ai":
         return (
           <AIScreen />
@@ -522,125 +519,123 @@ useFocusEffect(
             </Text>
 
           ) : (
-            
 
-            
+            (() => {
 
-            servicePosts.map((post) => {
+              console.log(
+                "RENDER POSTS:",
+                servicePosts
+              );
 
-              let imageArray = [];
+              return servicePosts.map((post) => {
 
-              try {
+                let imageArray = [];
 
-                imageArray =
-                  JSON.parse(
-                    post.images
+                try {
+
+                  if (
+                    post.images &&
+                    post.images !== "null"
+                  ) {
+
+                    imageArray =
+                      JSON.parse(
+                        post.images
+                      );
+
+                  }
+
+                } catch (err) {
+
+                  console.log(
+                    "IMAGE ERROR:",
+                    err
                   );
 
-              } catch {
+                  imageArray = [];
 
-                imageArray = [];
+                }
 
-              }
+                const firstImage =
+                  imageArray[0];
 
-              const firstImage =
-                imageArray[0];
+                return (
 
-              return (
+                  <Card
+                    key={post.work_id}
+                    style={styles.modernCard}
+                  >
 
-                <Card
-                  key={post.work_id}
-                  style={styles.modernCard}
-                >
+                    {firstImage && (
 
-                  {firstImage && (
-
-                    <Card.Cover
-                      source={{
-                        uri:
-                          `${BASE_URL}/uploads/${firstImage}`
-                      }}
-                      style={
-                        styles.cardImage
-                      }
-                    />
-
-                  )}
-
-                  <Card.Content>
-
-                    <View
-                      style={styles.cardHeader}
-                    >
-
-                      <Avatar.Icon
-                        size={45}
-                        icon="hammer"
+                      <Card.Cover
+                        source={{
+                          uri:
+                            `${BASE_URL}/uploads/${firstImage}`
+                        }}
                         style={
-                          styles.avatar
+                          styles.cardImage
                         }
                       />
 
+                    )}
+
+                    <Card.Content>
+
                       <View
-                        style={{ flex: 1 }}
+                        style={styles.cardHeader}
                       >
 
-                        <Text
+                        <Avatar.Icon
+                          size={45}
+                          icon="hammer"
                           style={
-                            styles.cardTitle
+                            styles.avatar
                           }
+                        />
+
+                        <View
+                          style={{ flex: 1 }}
                         >
-                          {post.title}
-                        </Text>
 
-                        <TouchableOpacity
-                          onPress={() => {
-
-                            console.log(
-                              "POST USER ID:",
-                              post.user_id
-                            );
-
-                            navigation.navigate(
-
-                              "UserProfile",
-                              {
-                                userId:
-                                  post.user_id
-                              }
-                            );
-
-                          }}
-                        >
                           <Text
                             style={
-                              styles.cardSubtitle
+                              styles.cardTitle
                             }
                           >
-                            {post.name}
+                            {post.title}
                           </Text>
+                          {post.name && (
 
-                        </TouchableOpacity>
+                            <Text
+                              style={
+                                styles.cardSubtitle
+                              }
+                            >
+                              {post.name || "Service Provider"}
+                            </Text>
+                          )}
+                        </View>
 
                       </View>
 
-                    </View>
+                      <Text
+                        style={
+                          styles.cardDescription
+                        }
+                      >
+                        {post.description}
+                      </Text>
 
-                    <Text
-                      style={
-                        styles.cardDescription
-                      }
-                    >
-                      {post.description}
-                    </Text>
+                    </Card.Content>
 
-                  </Card.Content>
+                  </Card>
 
-                </Card>
+                );
 
-              );
+              });
 
-            })
+            })()
 
           )}
 
@@ -747,18 +742,25 @@ useFocusEffect(
 
                     <Button
                       mode="contained"
-                      buttonColor="#C19A6B"
-                      onPress={() =>
+                      onPress={() => {
+
+                        console.log(
+                          "MATERIAL ITEM:",
+                          item
+                        );
+
                         navigation.navigate(
                           "Chat",
                           {
                             receiverId:
                               item.user_id,
-                            jobId:
-                              item.post_id
+
+                            receiverName:
+                              item.name
                           }
-                        )
-                      }
+                        );
+
+                      }}
                     >
                       Message Supplier
                     </Button>
@@ -773,9 +775,10 @@ useFocusEffect(
 
           </>
 
-        )}
+        )
+      }
 
-    </ScrollView>
+    </ScrollView >
 
   );
 
@@ -852,18 +855,19 @@ useFocusEffect(
             />
 
             <Drawer.Item
-              label="My Profile"
-              icon="account"
+              label="Messages"
+              icon="chat"
               onPress={() => {
 
-                setCurrentScreen(
-                  "profile"
+                navigation.navigate(
+                  "Messages"
                 );
 
                 setDrawerOpen(false);
 
               }}
             />
+
 
             {user?.role ===
               "FurnitureOwner" && (

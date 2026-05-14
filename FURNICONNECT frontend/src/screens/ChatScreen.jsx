@@ -16,6 +16,12 @@ import {
 
 import { Button } from "react-native-paper";
 
+import AsyncStorage from
+  "@react-native-async-storage/async-storage";
+
+import jwtDecode from
+  "jwt-decode";
+
 import {
   getMessages,
   sendMessage
@@ -23,21 +29,24 @@ import {
 
 import { COLORS } from "../theme/colors";
 
-export default function ChatScreen({ route }) {
+export default function ChatScreen({
+  route
+}) {
 
-  // ✅ USER ID
-  const userId =
-    route.params?.userId;
+  // ========================
+  // PARAMS
+  // ========================
 
-  console.log(
-    "CHAT PARAMS:",
-    route.params
-  );
+  const receiverId =
+  route?.params?.receiverId;
+  
+  const receiverName =
+    route.params?.receiverName ||
+    "User";
 
-  console.log(
-    "USER ID:",
-    userId
-  );
+  // ========================
+  // STATES
+  // ========================
 
   const [messages, setMessages] =
     useState([]);
@@ -45,10 +54,52 @@ export default function ChatScreen({ route }) {
   const [text, setText] =
     useState("");
 
+  const [myId, setMyId] =
+    useState(null);
+
   const flatListRef =
     useRef();
 
-  // ✅ LOAD MESSAGES
+  // ========================
+  // GET LOGGED USER
+  // ========================
+
+  useEffect(() => {
+
+    getMyId();
+
+  }, []);
+
+  const getMyId =
+    async () => {
+
+      try {
+
+        const token =
+          await AsyncStorage.getItem(
+            "token"
+          );
+
+        if (token) {
+
+          const decoded =
+            jwtDecode(token);
+
+setMyId(decoded.user_id);
+        }
+
+      } catch (err) {
+
+        console.log(err);
+
+      }
+
+    };
+
+  // ========================
+  // LOAD MESSAGES
+  // ========================
+
   const loadMessages =
     async () => {
 
@@ -56,13 +107,8 @@ export default function ChatScreen({ route }) {
 
         const res =
           await getMessages(
-            userId
+            receiverId
           );
-
-        console.log(
-          "MESSAGES:",
-          res.data
-        );
 
         setMessages(
           res.data || []
@@ -82,15 +128,18 @@ export default function ChatScreen({ route }) {
 
   useEffect(() => {
 
-    if (userId) {
+    if (receiverId) {
 
       loadMessages();
 
     }
 
-  }, [userId]);
+  }, [receiverId]);
 
-  // ✅ AUTO SCROLL
+  // ========================
+  // AUTO SCROLL
+  // ========================
+
   const scrollToBottom =
     () => {
 
@@ -101,79 +150,57 @@ export default function ChatScreen({ route }) {
 
     };
 
-  // ✅ SEND MESSAGE
+  // ========================
+  // SEND MESSAGE
+  // ========================
+
   const handleSend =
     async () => {
 
-      console.log(
-        "🔥 HANDLE SEND START"
-      );
-
       if (!text.trim()) {
-
-        console.log(
-          "❌ EMPTY TEXT"
-        );
-
         return;
-
       }
 
       try {
 
         console.log(
-          "📤 SENDING:",
-          {
-            receiver_id:
-              userId,
+  "SENDING DATA:",
+  {
+    receiver_id:
+      receiverId,
 
-            message: text
-          }
-        );
+    message: text
+  }
+);
 
-        const res =
-          await sendMessage({
+await sendMessage({
 
-            receiver_id:
-              userId,
+  receiver_id:
+    receiverId,
 
-            message: text
+  message: text
 
-          });
-
-        console.log(
-          "✅ RESPONSE:",
-          res.data
-        );
-
-        // ✅ TEMP UI UPDATE
-        setMessages(prev => [
-          ...prev,
-          {
-            message: text
-          }
-        ]);
+});
 
         setText("");
 
-        // ✅ reload messages
         loadMessages();
 
       } catch (err) {
 
         console.log(
-          "❌ SEND ERROR FULL:",
-          err
-        );
-
-        console.log(
-          "❌ SEND ERROR RESPONSE:",
-          err.response?.data
+          "SEND ERROR:",
+          err.response?.data ||
+          err.message
         );
 
       }
 
     };
+
+  // ========================
+  // UI
+  // ========================
 
   return (
 
@@ -189,34 +216,66 @@ export default function ChatScreen({ route }) {
 
       <View style={styles.container}>
 
-        {/* ✅ MESSAGE LIST */}
+        {/* HEADER */}
+
+        <View style={styles.header}>
+
+          <Text style={styles.headerText}>
+            {receiverName}
+          </Text>
+
+        </View>
+
+        {/* MESSAGES */}
+
         <FlatList
           ref={flatListRef}
           data={messages}
-          keyExtractor={(item, index) =>
-            index.toString()
+          keyExtractor={(item) =>
+            item.message_id.toString()
           }
           contentContainerStyle={{
-            paddingBottom: 80
+            padding: 10,
+            paddingBottom: 100
           }}
           onContentSizeChange={
             scrollToBottom
           }
-          renderItem={({ item }) => (
+          renderItem={({ item }) => {
 
-            <View style={styles.msg}>
+            const isMine =
+              item.sender_id === myId;
 
-              <Text style={styles.text}>
-                {item.message}
-              </Text>
+            return (
 
-            </View>
+              <View
+                style={[
 
-          )}
+                  styles.msg,
+
+                  isMine
+                    ? styles.myMsg
+                    : styles.otherMsg
+
+                ]}
+              >
+
+                <Text style={styles.text}>
+                  {item.message}
+                </Text>
+
+              </View>
+
+            );
+
+          }}
         />
 
-        {/* ✅ INPUT BOX */}
-        <View style={styles.inputContainer}>
+        {/* INPUT */}
+
+        <View
+          style={styles.inputContainer}
+        >
 
           <TextInput
             value={text}
@@ -228,15 +287,9 @@ export default function ChatScreen({ route }) {
 
           <Button
             mode="contained"
-            onPress={() => {
-
-              console.log(
-                "SEND BUTTON CLICKED"
-              );
-
-              handleSend();
-
-            }}
+            buttonColor="#C19A6B"
+            textColor="#000"
+            onPress={handleSend}
           >
             Send
           </Button>
@@ -251,7 +304,10 @@ export default function ChatScreen({ route }) {
 
 }
 
-// 🎨 STYLES
+// ========================
+// STYLES
+// ========================
+
 const styles = StyleSheet.create({
 
   container: {
@@ -260,16 +316,39 @@ const styles = StyleSheet.create({
       COLORS.background,
   },
 
+  header: {
+    padding: 15,
+    backgroundColor: "#1f1f1f",
+    borderBottomWidth: 1,
+    borderBottomColor: "#333"
+  },
+
+  headerText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold"
+  },
+
   msg: {
-    padding: 10,
+    padding: 12,
+    marginVertical: 5,
+    borderRadius: 15,
+    maxWidth: "75%"
+  },
+
+  myMsg: {
+    backgroundColor: "#C19A6B",
+    alignSelf: "flex-end"
+  },
+
+  otherMsg: {
     backgroundColor: "#333",
-    margin: 5,
-    borderRadius: 10,
     alignSelf: "flex-start"
   },
 
   text: {
-    color: "#fff"
+    color: "#fff",
+    fontSize: 15
   },
 
   inputContainer: {

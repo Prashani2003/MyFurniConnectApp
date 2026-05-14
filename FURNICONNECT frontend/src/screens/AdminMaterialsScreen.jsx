@@ -36,9 +36,9 @@ export default function AdminMaterialsScreen() {
 
     try {
 
-      const res = await API.get(
-        "/admin/materials"
-      );
+     const res = await API.get(
+  "/materials"
+);
 
       setMaterials(res.data || []);
 
@@ -60,10 +60,9 @@ export default function AdminMaterialsScreen() {
 
     try {
 
-      await API.delete(
-        `/admin/materials/${id}`
-      );
-
+   await API.delete(
+  `/materials/${id}`
+);
       Alert.alert(
         "Success",
         "Material deleted"

@@ -5,6 +5,7 @@ import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ChatScreen from "../screens/ChatScreen";
+import MessagesScreen from "../screens/MessagesScreen";
 import ReviewScreen from "../screens/ReviewScreen";
 import UserProfileScreen from "../screens/UserProfileScreen";
 import DrawerNavigator from "./DrawerNavigator";
@@ -19,20 +20,25 @@ export default function AuthNavigator({ user, setUser }) {
       {user ? (
         <>
           {/* 🔥 MAIN APP (DRAWER / HOME) */}
-         <Stack.Screen name="Main">
-  {(props) => (
-   <HomeScreen
-  {...props}
-  user={user}
-  setUser={setUser}
-/>
-  )}
-</Stack.Screen>
+          <Stack.Screen name="Main">
+            {(props) => (
+              <HomeScreen
+                {...props}
+                user={user}
+                setUser={setUser}
+              />
+            )}
+          </Stack.Screen>
 
           {/* 🔥 CHAT SCREEN */}
           <Stack.Screen
             name="Chat"
             component={ChatScreen}
+          />
+
+          <Stack.Screen
+            name="Messages"
+            component={MessagesScreen}
           />
 
           {/* 🔥 REVIEW SCREEN */}

@@ -377,7 +377,7 @@ Total Estimated Cost: ${res.data.estimatedCost}`
         style={styles.btn}
         onPress={getDesignSuggestion}
       >
-        Get AI Design
+        Get Design
       </Button>
 
       <Button
