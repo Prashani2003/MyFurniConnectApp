@@ -12,6 +12,5 @@ const authMiddleware = require("../middleware/authMiddleware");
 router.post("/", authMiddleware, sendMessage);
 
 // GET MESSAGES
-router.get("/:jobId/:userId", authMiddleware, getMessages);
-
+router.get("/:userId", authMiddleware, getMessages);
 module.exports = router;

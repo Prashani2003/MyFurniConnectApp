@@ -25,7 +25,7 @@ exports.sendMessage = async (req, res) => {
 exports.getMessages = async (req, res) => {
   try {
     const user_id = req.user.id;
-    const { receiverId } = req.params;
+const { userId } = req.params;
 
     const [rows] = await db.query(
       `SELECT * FROM messages
@@ -34,8 +34,7 @@ exports.getMessages = async (req, res) => {
        OR
        (sender_id = ? AND receiver_id = ?)
        ORDER BY created_at ASC`,
-      [user_id, receiverId, receiverId, user_id]
-    );
+[user_id, userId, userId, user_id]    );
 
     res.json(rows);
 

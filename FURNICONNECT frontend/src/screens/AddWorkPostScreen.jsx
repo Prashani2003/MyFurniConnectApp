@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import AsyncStorage from
-"@react-native-async-storage/async-storage";
+  "@react-native-async-storage/async-storage";
 
 import {
   View,
@@ -19,14 +19,11 @@ import {
 
 import {
   launchImageLibrary
-} from
-"react-native-image-picker";
+} from "react-native-image-picker";
 
-import {
-  createWorkPost
-} from "../src/services/api";
-
-export default function AddWorkPostScreen() {
+export default function AddWorkPostScreen({
+  onSuccess
+}) {
 
   const [title, setTitle] =
     useState("");
@@ -39,167 +36,182 @@ export default function AddWorkPostScreen() {
   const [images, setImages] =
     useState([]);
 
+  // ======================
   // PICK IMAGE
+  // ======================
 
   const pickImage = () => {
 
-  const options = {
+    const options = {
 
-    mediaType: "photo",
+      mediaType: "photo",
 
-    quality: 1
+      quality: 1
 
-  };
+    };
 
-  launchImageLibrary(
-    options,
+    launchImageLibrary(
 
-    (response) => {
+      options,
 
-      if (
-        response.didCancel
-      ) {
+      (response) => {
 
-        console.log(
-          "Cancelled"
-        );
+        if (
+          response.didCancel
+        ) {
 
-      } else if (
-        response.errorCode
-      ) {
+          console.log(
+            "Cancelled"
+          );
 
-        console.log(
-          response.errorMessage
-        );
+        } else if (
+          response.errorCode
+        ) {
 
-      } else {
+          console.log(
+            response.errorMessage
+          );
 
-        const selectedImage =
-          response.assets[0];
+        } else {
 
-        setImages([
-          ...images,
-          selectedImage
-        ]);
+          const selectedImage =
+            response.assets[0];
+
+          setImages([
+            ...images,
+            selectedImage
+          ]);
+
+        }
 
       }
 
-    }
-  );
+    );
 
-};
+  };
+
+  // ======================
   // HANDLE POST
-const handlePost = async () => {
+  // ======================
 
-  try {
+  const handlePost =
+    async () => {
 
-    const token =
-      await AsyncStorage.getItem(
-        "token"
-      );
+      try {
 
-    const formData =
-      new FormData();
+        const token =
+          await AsyncStorage.getItem(
+            "token"
+          );
 
-    formData.append(
-      "title",
-      title
-    );
+        const formData =
+          new FormData();
 
-    formData.append(
-      "description",
-      description
-    );
+        formData.append(
+          "title",
+          title
+        );
 
-    formData.append(
-      "category",
-      "Furniture"
-    );
+        formData.append(
+          "description",
+          description
+        );
 
-    images.forEach((img) => {
+        formData.append(
+          "category",
+          "Furniture"
+        );
 
-      formData.append(
-        "images",
-        {
+        images.forEach((img) => {
 
-          uri: img.uri,
+          formData.append(
+            "images",
+            {
 
-          type:
-            img.type ||
-            "image/jpeg",
+              uri: img.uri,
 
-          name:
-            img.fileName ||
-            `photo.jpg`
+              type:
+                img.type ||
+                "image/jpeg",
+
+              name:
+                img.fileName ||
+                "photo.jpg"
+
+            }
+          );
+
+        });
+
+        const response =
+          await fetch(
+
+            "http://192.168.1.3:5000/api/works",
+
+            {
+
+              method: "POST",
+
+              headers: {
+
+                Authorization:
+                  `Bearer ${token}`
+
+              },
+
+              body: formData
+
+            }
+
+          );
+
+        const data =
+          await response.json();
+
+        console.log(data);
+
+        if (response.ok) {
+
+          Alert.alert(
+            "Success",
+            "Work post added"
+          );
+
+          setTitle("");
+
+          setDescription("");
+
+          setImages([]);
+
+          // 🔥 REFRESH HOME
+          if (onSuccess) {
+  await onSuccess();
+}
+
+        } else {
+
+          Alert.alert(
+            "Error",
+            data.message
+          );
 
         }
-      );
 
-    });
+      } catch (err) {
 
-    const response =
-      await fetch(
+       console.log(
+  "FULL ERROR:",
+  err.message
+);
 
-        "http://192.168.1.3:5000/api/works",
+        Alert.alert(
+          "Error",
+          "Failed to add work"
+        );
 
-        {
+      }
 
-          method: "POST",
-
-          headers: {
-
-            Authorization:
-              `Bearer ${token}`
-
-          },
-
-          body: formData
-
-        }
-
-      );
-
-    const data =
-      await response.json();
-
-    console.log(data);
-
-    if (response.ok) {
-
-      Alert.alert(
-        "Success",
-        "Work post added"
-      );
-
-      setTitle("");
-
-      setDescription("");
-
-      setImages([]);
-
-    } else {
-
-      Alert.alert(
-        "Error",
-        data.message
-      );
-
-    }
-
-  } catch (err) {
-
-    console.log(err);
-
-    Alert.alert(
-      "Error",
-      "Failed to add work"
-    );
-
-  }
-
-};
-
-   
+    };
 
   return (
 
@@ -238,7 +250,7 @@ const handlePost = async () => {
         }
       />
 
-      {/* ADD PHOTO BUTTON */}
+      {/* ADD PHOTO */}
 
       <Button
         mode="outlined"
@@ -287,59 +299,63 @@ const handlePost = async () => {
 
 }
 
-const styles = StyleSheet.create({
+const styles =
+  StyleSheet.create({
 
-  container: {
-    flex: 1,
-    backgroundColor: "#121212",
-    padding: 20
-  },
+    container: {
+      flex: 1,
+      backgroundColor:
+        "#121212",
+      padding: 20
+    },
 
-  title: {
-    color: "#C19A6B",
-    fontSize: 26,
-    marginBottom: 20,
-    fontWeight: "bold"
-  },
+    title: {
+      color: "#C19A6B",
+      fontSize: 26,
+      marginBottom: 20,
+      fontWeight: "bold"
+    },
 
-  input: {
-    backgroundColor: "#1e1e1e",
-    color: "#fff",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-    fontSize: 16
-  },
+    input: {
+      backgroundColor:
+        "#1e1e1e",
+      color: "#fff",
+      padding: 15,
+      borderRadius: 12,
+      marginBottom: 15,
+      fontSize: 16
+    },
 
-  textArea: {
-    height: 120,
-    textAlignVertical: "top"
-  },
+    textArea: {
+      height: 120,
+      textAlignVertical: "top"
+    },
 
-  imageButton: {
-    marginBottom: 20,
-    borderColor: "#C19A6B",
-    borderRadius: 10
-  },
+    imageButton: {
+      marginBottom: 20,
+      borderColor: "#C19A6B",
+      borderRadius: 10
+    },
 
-  imageContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 20
-  },
+    imageContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent:
+        "space-between",
+      marginBottom: 20
+    },
 
-  preview: {
-    width: "48%",
-    height: 150,
-    borderRadius: 15,
-    marginBottom: 15
-  },
+    preview: {
+      width: "48%",
+      height: 150,
+      borderRadius: 15,
+      marginBottom: 15
+    },
 
-  postButton: {
-    borderRadius: 10,
-    paddingVertical: 5,
-    marginBottom: 30
-  }
+    postButton: {
+      borderRadius: 10,
+      paddingVertical: 5,
+      marginBottom: 30
+    }
 
-});
+  });

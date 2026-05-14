@@ -29,3 +29,17 @@ export const estimateMaterials = async (data) => {
   );
 
 };
+
+
+// ===============================
+// GENERATE AI IMAGE
+// ===============================
+
+export const generateAIImage = async (data) => {
+
+  return AI_API.post(
+    "/generate-ai-image",
+    data
+  );
+
+};

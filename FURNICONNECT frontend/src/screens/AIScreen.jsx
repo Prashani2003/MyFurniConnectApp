@@ -9,11 +9,14 @@ import {
   Image
 } from "react-native";
 
+
+
 import { Button } from "react-native-paper";
 
 import {
   getAIDesign,
-  estimateMaterials
+  estimateMaterials,
+  generateAIImage
 } from "../services/aiApi";
 
 export default function AIScreen() {
@@ -41,6 +44,12 @@ export default function AIScreen() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const [generatedImage, setGeneratedImage] =
+  useState(null);
+
+const [customPrompt, setCustomPrompt] =
+  useState("");  
 
   // ==========================
   // IMAGE PREVIEW LOGIC
@@ -163,8 +172,8 @@ export default function AIScreen() {
         console.log(res.data);
 
         setResult(
-          JSON.stringify(res.data)
-        );
+  res.data.result
+);
 
       } catch (err) {
 
@@ -179,6 +188,64 @@ export default function AIScreen() {
       }
 
     };
+
+    // ==========================
+// GENERATE AI IMAGE
+// ==========================
+
+const handleGenerateAIImage =
+  async () => {
+
+    try {
+
+      setLoading(true);
+
+      const res =
+        await generateAIImage({
+
+          furnitureType:
+            furnitureType,
+
+          width:
+            width,
+
+          color:
+            color,
+
+          prompt:
+            customPrompt
+
+        });
+
+      if (res.data.success) {
+
+        setGeneratedImage(
+          res.data.generatedImage
+        );
+
+      } else {
+
+        setResult(
+          res.data.error
+        );
+
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+      setResult(
+        "AI Image Generation Error"
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+};
 
   // ==========================
   // MATERIAL ESTIMATION
@@ -297,6 +364,14 @@ Total Estimated Cost: ${res.data.estimatedCost}`
         onChangeText={setDepth}
       />
 
+      <TextInput
+  placeholder="Custom AI Design Prompt"
+  placeholderTextColor="#aaa"
+  style={styles.input}
+  value={customPrompt}
+  onChangeText={setCustomPrompt}
+/>
+
       <Button
         mode="contained"
         style={styles.btn}
@@ -313,6 +388,14 @@ Total Estimated Cost: ${res.data.estimatedCost}`
         Estimate Materials
       </Button>
 
+      <Button
+  mode="contained"
+  style={styles.btn}
+  onPress={handleGenerateAIImage}
+>
+  Generate AI Image
+</Button>
+
       {/* IMAGE PREVIEW */}
 
       {previewImage && (
@@ -324,6 +407,19 @@ Total Estimated Cost: ${res.data.estimatedCost}`
         />
 
       )}
+      {/* GENERATED AI IMAGE */}
+
+{generatedImage && (
+
+  <Image
+    source={{
+      uri: generatedImage
+    }}
+    style={styles.previewImage}
+    resizeMode="cover"
+  />
+
+)}
 
       {/* RESULT BOX */}
 

@@ -110,6 +110,27 @@ function CustomDrawerContent(
         }
       />
 
+      {/* MESSAGES */}
+
+      <DrawerItem
+        label="Messages"
+        labelStyle={
+          styles.label
+        }
+        icon={() => (
+          <Icon
+            name="chat"
+            size={22}
+            color="#fff"
+          />
+        )}
+        onPress={() =>
+          props.navigation.navigate(
+            "Messages"
+          )
+        }
+      />
+
       {/* MY PROFILE */}
 
       <DrawerItem
@@ -124,8 +145,7 @@ function CustomDrawerContent(
         )}
         onPress={() =>
           props.navigation.navigate(
-            "My Profile",
-           
+            "My Profile"
           )
         }
       />
@@ -150,32 +170,6 @@ function CustomDrawerContent(
             onPress={() =>
               props.navigation.navigate(
                 "My Posts"
-              )
-            }
-          />
-
-        )}
-
-      {/* SERVICE PROVIDER */}
-
-      {role ===
-        "serviceprovider" && (
-
-          <DrawerItem
-            label="Messages"
-            labelStyle={
-              styles.label
-            }
-            icon={() => (
-              <Icon
-                name="chat"
-                size={22}
-                color="#fff"
-              />
-            )}
-            onPress={() =>
-              props.navigation.navigate(
-                "Messages"
               )
             }
           />
@@ -210,26 +204,27 @@ function CustomDrawerContent(
 
       {/* MY REVIEWS */}
 
-      {role !== "furnitureowner" && (
+      {role !==
+        "furnitureowner" && (
 
-        <DrawerItem
-          label="My Reviews"
-          labelStyle={styles.label}
-          icon={() => (
-            <Icon
-              name="star"
-              size={22}
-              color="#fff"
-            />
-          )}
-          onPress={() =>
-            props.navigation.navigate(
-              "My Reviews"
-            )
-          }
-        />
+          <DrawerItem
+            label="My Reviews"
+            labelStyle={styles.label}
+            icon={() => (
+              <Icon
+                name="star"
+                size={22}
+                color="#fff"
+              />
+            )}
+            onPress={() =>
+              props.navigation.navigate(
+                "My Reviews"
+              )
+            }
+          />
 
-      )}
+        )}
 
       {/* LOGOUT */}
 
@@ -260,7 +255,6 @@ export default function DrawerNavigator({
   user,
   setUser
 }) {
- alert(JSON.stringify(user));
 
   if (!user) return null;
 
@@ -270,16 +264,13 @@ export default function DrawerNavigator({
 
       screenOptions={{
         headerStyle: {
-          backgroundColor:
-            "#111"
+          backgroundColor: "#111"
         },
 
-        headerTintColor:
-          "#fff",
+        headerTintColor: "#fff",
 
         drawerStyle: {
-          backgroundColor:
-            "#1e1e1e"
+          backgroundColor: "#1e1e1e"
         }
       }}
 
@@ -295,46 +286,48 @@ export default function DrawerNavigator({
 
     >
 
+      {/* HOME */}
       <Drawer.Screen
         name="Home"
         component={HomeScreen}
       />
 
-  
-
-      {/* USER PROFILE SCREEN */}
-
-      <Drawer.Screen
-  name="My Profile"
-  component={UserProfileScreen}
-  initialParams={{
-    userId:
-   
-  user?.user?.id ||
-  user?.id
-  }}
-/>
-
-      <Drawer.Screen
-        name="My Posts"
-        component={MyPostsScreen}
-      />
-
+      {/* MESSAGES */}
       <Drawer.Screen
         name="Messages"
         component={ChatScreen}
       />
 
+      {/* USER PROFILE */}
+      <Drawer.Screen
+        name="My Profile"
+        component={UserProfileScreen}
+        initialParams={{
+          userId:
+            user?.user?.id ||
+            user?.id
+        }}
+      />
+
+      {/* MY POSTS */}
+      <Drawer.Screen
+        name="My Posts"
+        component={MyPostsScreen}
+      />
+
+      {/* REVIEWS */}
       <Drawer.Screen
         name="My Reviews"
         component={MyReviewsScreen}
       />
 
+      {/* SETTINGS */}
       <Drawer.Screen
         name="Settings"
         component={SettingsScreen}
       />
 
+      {/* AI */}
       <Drawer.Screen
         name="AI Assistant"
         component={AIScreen}
@@ -346,49 +339,45 @@ export default function DrawerNavigator({
 
 }
 
-const styles =
-  StyleSheet.create({
+const styles = StyleSheet.create({
 
-    profileContainer: {
-      padding: 20,
-      alignItems:
-        "center",
-      borderBottomWidth: 1,
-      borderBottomColor:
-        "#333",
-      marginBottom: 10
-    },
+  profileContainer: {
+    padding: 20,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#333",
+    marginBottom: 10
+  },
 
-    avatar: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
-      marginBottom: 10
-    },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10
+  },
 
-    name: {
-      color: "#fff",
-      fontSize: 18,
-      fontWeight: "bold"
-    },
+  name: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold"
+  },
 
-    role: {
-      color: "#aaa",
-      marginTop: 5,
-      fontSize: 16
-    },
+  role: {
+    color: "#aaa",
+    marginTop: 5,
+    fontSize: 16
+  },
 
-    serviceType: {
-      color: "#c9a46c",
-      marginTop: 3,
-      fontSize: 14,
-      textTransform:
-        "capitalize"
-    },
+  serviceType: {
+    color: "#c9a46c",
+    marginTop: 3,
+    fontSize: 14,
+    textTransform: "capitalize"
+  },
 
-    label: {
-      color: "#fff",
-      fontSize: 15
-    }
+  label: {
+    color: "#fff",
+    fontSize: 15
+  }
 
-  });
+});

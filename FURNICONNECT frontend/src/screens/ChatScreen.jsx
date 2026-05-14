@@ -1,4 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef
+} from "react";
+
 import {
   View,
   Text,
@@ -20,17 +25,20 @@ import { COLORS } from "../theme/colors";
 
 export default function ChatScreen({ route }) {
 
-  // 🔥 STEP 2 FIX
- const receiverId =
-  route.params?.receiverId;
+  // ✅ USER ID
+  const userId =
+    route.params?.userId;
 
-const jobId =
-  route.params?.jobId;
+  console.log(
+    "CHAT PARAMS:",
+    route.params
+  );
 
-console.log(
-  "CHAT PARAMS:",
-  route.params
-);
+  console.log(
+    "USER ID:",
+    userId
+  );
+
   const [messages, setMessages] =
     useState([]);
 
@@ -40,18 +48,21 @@ console.log(
   const flatListRef =
     useRef();
 
-  // 🔥 LOAD MESSAGES
+  // ✅ LOAD MESSAGES
   const loadMessages =
     async () => {
 
       try {
 
-        // 🔥 STEP 3 FIX
         const res =
           await getMessages(
-            jobId,
-            receiverId
+            userId
           );
+
+        console.log(
+          "MESSAGES:",
+          res.data
+        );
 
         setMessages(
           res.data || []
@@ -71,11 +82,15 @@ console.log(
 
   useEffect(() => {
 
-    loadMessages();
+    if (userId) {
 
-  }, []);
+      loadMessages();
 
-  // 🔥 AUTO SCROLL
+    }
+
+  }, [userId]);
+
+  // ✅ AUTO SCROLL
   const scrollToBottom =
     () => {
 
@@ -86,7 +101,7 @@ console.log(
 
     };
 
-  // 🔥 SEND MESSAGE
+  // ✅ SEND MESSAGE
   const handleSend =
     async () => {
 
@@ -110,34 +125,38 @@ console.log(
           "📤 SENDING:",
           {
             receiver_id:
-              receiverId,
+              userId,
 
             message: text
           }
         );
 
-        // 🔥 STEP 4 FIX
         const res =
-       await sendMessage({
+          await sendMessage({
 
-  receiver_id:
-    receiverId,
+            receiver_id:
+              userId,
 
-  job_id:
-    jobId,
+            message: text
 
-  message: text
-
-});
+          });
 
         console.log(
           "✅ RESPONSE:",
           res.data
         );
 
+        // ✅ TEMP UI UPDATE
+        setMessages(prev => [
+          ...prev,
+          {
+            message: text
+          }
+        ]);
+
         setText("");
 
-        // 🔁 reload messages
+        // ✅ reload messages
         loadMessages();
 
       } catch (err) {
@@ -170,12 +189,12 @@ console.log(
 
       <View style={styles.container}>
 
-        {/* 🔥 MESSAGE LIST */}
+        {/* ✅ MESSAGE LIST */}
         <FlatList
           ref={flatListRef}
           data={messages}
-          keyExtractor={(item) =>
-            item.message_id?.toString()
+          keyExtractor={(item, index) =>
+            index.toString()
           }
           contentContainerStyle={{
             paddingBottom: 80
@@ -196,7 +215,7 @@ console.log(
           )}
         />
 
-        {/* 🔥 INPUT BOX */}
+        {/* ✅ INPUT BOX */}
         <View style={styles.inputContainer}>
 
           <TextInput

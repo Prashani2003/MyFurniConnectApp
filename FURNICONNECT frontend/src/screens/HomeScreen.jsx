@@ -3,6 +3,12 @@ import React, {
   useEffect
 } from "react";
 
+
+
+import {
+  useFocusEffect
+} from "@react-navigation/native";
+
 import {
   View,
   Text,
@@ -23,6 +29,8 @@ import {
 import MaterialCommunityIcons from
   "react-native-vector-icons/MaterialCommunityIcons";
 
+
+
 import ProfileScreen from "./UserProfileScreen";
 import MyPostsScreen from "./MyPostsScreen";
 import SettingsScreen from "./SettingsScreen";
@@ -39,6 +47,7 @@ import AddWorkPostScreen from "./AddWorkPostScreen";
 import AIScreen from "./AIScreen";
 
 import AdminDrawer from "../navigation/AdminDrawer";
+
 
 import {
   getJobs,
@@ -73,9 +82,9 @@ export default function HomeScreen({
     setMaterials] =
     useState([]);
 
-  const [servicePosts,
-    setServicePosts] =
-    useState([]);
+const [servicePosts,
+  setServicePosts] =
+  useState([]);
 
   const [selectedTab,
     setSelectedTab] =
@@ -101,13 +110,15 @@ export default function HomeScreen({
         setMaterials(
           materialsRes.data || []
         );
+const serviceRes =
+  await getServicePosts();
 
-        const serviceRes =
-          await getServicePosts();
+console.log(
+  "UPDATED POSTS:",
+  serviceRes.data
+);
 
-        setServicePosts(
-          serviceRes.data || []
-        );
+setServicePosts(serviceRes.data || []);
 
       } catch (err) {
 
@@ -125,11 +136,15 @@ export default function HomeScreen({
   // USE EFFECT
   // ======================
 
-  useEffect(() => {
+useFocusEffect(
+
+  React.useCallback(() => {
 
     loadAllData();
 
-  }, []);
+  }, [])
+
+);
 
   // ======================
   // ADMIN
@@ -244,11 +259,22 @@ export default function HomeScreen({
           <MyMaterialsScreen />
         );
 
-      case "addWork":
-        return (
-          <AddWorkPostScreen />
-        );
+     case "addWork":
+  return (
 
+    <AddWorkPostScreen
+  onSuccess={async () => {
+
+    await loadAllData();
+
+    setSelectedTab("services");
+
+    setCurrentScreen("home");
+
+  }}
+/>
+
+  );
       case "ai":
         return (
           <AIScreen />
@@ -496,6 +522,9 @@ export default function HomeScreen({
             </Text>
 
           ) : (
+            
+
+            
 
             servicePosts.map((post) => {
 

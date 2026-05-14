@@ -3,6 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
+import base64
 
 # LOAD ENV
 load_dotenv()
@@ -11,6 +12,45 @@ load_dotenv()
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY")
 )
+
+IMAGE_MAP = {
+
+    "chair-small":
+        "assets/designs/chair-small.jpg",
+
+    "chair-medium":
+        "assets/designs/chair-medium.jpg",
+
+    "chair-large":
+        "assets/designs/chair-large.jpg",
+
+    "sofa-small":
+        "assets/designs/sofa-small.jpg",
+
+    "sofa-medium":
+        "assets/designs/sofa-medium.jpg",
+
+    "sofa-large":
+        "assets/designs/sofa-large.jpg",
+
+    "bed-small":
+        "assets/designs/bed-single.jpg",
+
+    "bed-medium":
+        "assets/designs/bed-queen.jpg",
+
+    "bed-large":
+        "assets/designs/bed-king.jpg",
+
+    "closet-small":
+        "assets/designs/closet2.jpg",
+
+    "closet-medium":
+        "assets/designs/closet3.jpg",
+
+    "closet-large":
+        "assets/designs/closet4.jpg",
+}
 
 # APP
 app = Flask(__name__)
@@ -254,6 +294,106 @@ def material_estimation():
     })
 
 # =====================================
+# =====================================
+# GENERATE AI IMAGE DESIGN
+# =====================================
+
+@app.route("/generate-ai-image", methods=["POST"])
+def generate_ai_image():
+
+    try:
+
+        data = request.json
+
+        furniture_type = data.get("furnitureType")
+        width = float(data.get("width"))
+        color = data.get("color")
+        custom_prompt = data.get("prompt")
+
+        # =========================
+        # DETECT SIZE
+        # =========================
+
+        size = "small"
+
+        if width < 100:
+
+            size = "small"
+
+        elif width < 180:
+
+            size = "medium"
+
+        else:
+
+            size = "large"
+
+        # =========================
+        # FIND MATCHING IMAGE
+        # =========================
+
+        image_key = f"{furniture_type.lower()}-{size}"
+
+        image_path = IMAGE_MAP.get(image_key)
+
+        if not image_path:
+
+            return jsonify({
+                "success": False,
+                "error": "No matching image found"
+            })
+
+        # =========================
+        # OPEN IMAGE
+        # =========================
+
+        with open(image_path, "rb") as image_file:
+
+            result = client.images.edit(
+
+                model="gpt-image-1",
+
+                image=image_file,
+
+                prompt=f"""
+                Modify this furniture design.
+
+                Furniture Type:
+                {furniture_type}
+
+                Preferred Color:
+                {color}
+
+                User Instructions:
+                {custom_prompt}
+
+                Keep the furniture realistic.
+                Keep similar structure.
+                Generate premium furniture style.
+                """
+            )
+
+        image_base64 = result.data[0].b64_json
+
+        return jsonify({
+
+            "success": True,
+
+            "generatedImage":
+                f"data:image/png;base64,{image_base64}"
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "success": False,
+
+            "error": str(e)
+
+        })
+
 
 if __name__ == "__main__":
 

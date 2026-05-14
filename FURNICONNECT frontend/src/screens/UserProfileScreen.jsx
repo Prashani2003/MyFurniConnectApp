@@ -9,7 +9,8 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  TouchableOpacity
 } from "react-native";
 
 import API from "../services/api";
@@ -19,12 +20,14 @@ import {
 } from "../theme/colors";
 
 export default function UserProfileScreen({
-  route
+  route,
+  navigation
+
 }) {
 
   
 
-  const userId =
+ const userId =
   route?.params?.userId ||
   route?.params?.id;
 
@@ -182,9 +185,25 @@ console.log(
       {/* WORK TITLE */}
 
       <Text style={styles.workTitle}>
-        All Works
-      </Text>
+  All Works
+</Text>
 
+<TouchableOpacity
+  onPress={() => {
+
+    navigation.navigate(
+      "ChatScreen",
+      {
+        userId
+      }
+    );
+
+  }}
+>
+  <Text>
+    Message
+  </Text>
+</TouchableOpacity>
       {/* WORK LIST */}
 
       {works.map((work) => {
